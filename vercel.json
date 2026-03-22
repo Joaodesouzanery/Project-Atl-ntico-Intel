@@ -12,7 +12,8 @@
     { "src": "/api/analyze", "dest": "/api/analyze.py" },
     { "src": "/api/network", "dest": "/api/network.py" },
     { "src": "/api/risk",    "dest": "/api/risk.py" },
-    { "src": "/api/demo",    "dest": "/api/demo.py" },
-    { "src": "/(.*)",        "dest": "/api/index.py" }
+    { "src": "/api/demo",        "dest": "/api/demo.py" },
+    { "src": "/api/sigint_demo", "dest": "/api/sigint_demo.py" },
+    { "src": "/(.*)",            "dest": "/api/index.py" }
   ]
 }

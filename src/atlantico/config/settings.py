@@ -326,6 +326,104 @@ class Settings(BaseSettings):
         """Retorna lista de NCMs estratégicos a partir da string CSV."""
         return [code.strip() for code in self.finint_strategic_ncm_codes.split(",") if code.strip()]
 
+    # ─── SIGINT — Credenciais de Fontes ──────────────────────────────
+    otx_api_key: str = Field(default="", repr=False, description="Chave de API AlienVault OTX.")
+    virustotal_api_key: str = Field(default="", repr=False, description="Chave de API VirusTotal v3.")
+    nvd_api_key: str = Field(default="", repr=False, description="Chave de API NVD (opcional, aumenta rate limit).")
+
+    # ─── SIGINT — URLs de Fontes ──────────────────────────────────────
+    nvd_cve_url: str = Field(
+        default="https://services.nvd.nist.gov/rest/json/cves/2.0",
+        description="URL base da API NVD CVE v2.0.",
+    )
+    certbr_alertas_url: str = Field(
+        default="https://www.cert.br/rss/alertas.rdf",
+        description="URL do feed RDF de alertas do CERT.br.",
+    )
+    certbr_avisos_url: str = Field(
+        default="https://www.cert.br/rss/avisos.rdf",
+        description="URL do feed RDF de avisos do CERT.br.",
+    )
+    certbr_noticias_url: str = Field(
+        default="https://www.cert.br/rss/noticias.rdf",
+        description="URL do feed RDF de notícias do CERT.br.",
+    )
+    otx_pulses_url: str = Field(
+        default="https://otx.alienvault.com/api/v1/pulses/subscribed",
+        description="URL base da API OTX AlienVault (pulsos subscritos).",
+    )
+    virustotal_url: str = Field(
+        default="https://www.virustotal.com/api/v3",
+        description="URL base da API VirusTotal v3.",
+    )
+
+    # ─── SIGINT — Limiares de Análise ─────────────────────────────────
+    sigint_cvss_threshold: float = Field(
+        default=7.0,
+        ge=0.0,
+        le=10.0,
+        description="CVSS mínimo para ingestão de CVEs via NVD.",
+    )
+    sigint_ioc_confidence_threshold: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description="Confiança mínima para gerar alerta de IOC.",
+    )
+    sigint_disinfo_score_threshold: float = Field(
+        default=0.4,
+        ge=0.0,
+        le=1.0,
+        description="Score mínimo de desinformação para gerar alerta.",
+    )
+    sigint_cve_alert_score_threshold: float = Field(
+        default=0.6,
+        ge=0.0,
+        le=1.0,
+        description="Score contextual mínimo para gerar alerta de CVE.",
+    )
+    sigint_narrative_cluster_threshold: float = Field(
+        default=0.35,
+        ge=0.0,
+        le=1.0,
+        description="Similaridade cosseno mínima para agrupar narrativas.",
+    )
+    sigint_vt_malicious_threshold: int = Field(
+        default=3,
+        ge=1,
+        description="Número mínimo de engines VirusTotal detectando malicioso.",
+    )
+
+    # ─── SIGINT — Intervalos de Ingestão (segundos) ───────────────────
+    sigint_ingest_nvd_interval_s: int = Field(
+        default=3600,
+        description="Intervalo de ingestão NVD CVE em segundos (padrão: 1h).",
+    )
+    sigint_ingest_certbr_interval_s: int = Field(
+        default=1800,
+        description="Intervalo de ingestão CERT.br em segundos (padrão: 30min).",
+    )
+    sigint_ingest_otx_interval_s: int = Field(
+        default=3600,
+        description="Intervalo de ingestão OTX AlienVault em segundos (padrão: 1h).",
+    )
+    sigint_ingest_news_interval_s: int = Field(
+        default=900,
+        description="Intervalo de ingestão feeds de notícias em segundos (padrão: 15min).",
+    )
+    sigint_analyze_threats_interval_s: int = Field(
+        default=3600,
+        description="Intervalo de análise de ameaças em segundos (padrão: 1h).",
+    )
+    sigint_analyze_narratives_interval_s: int = Field(
+        default=1800,
+        description="Intervalo de análise de narrativas em segundos (padrão: 30min).",
+    )
+    sigint_simulate_incidents_interval_s: int = Field(
+        default=7200,
+        description="Intervalo de simulação de incidentes em segundos (padrão: 2h).",
+    )
+
     # ─── Observabilidade ──────────────────────────────────────────────
     log_level: LogLevel = LogLevel.INFO
     otel_endpoint: str = "http://localhost:4317"
