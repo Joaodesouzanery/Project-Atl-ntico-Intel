@@ -4,6 +4,7 @@
     { "source": "/api/analyze", "destination": "/api/analyze.py" },
     { "source": "/api/network", "destination": "/api/network.py" },
     { "source": "/api/risk",    "destination": "/api/risk.py" },
-    { "source": "/api/demo",    "destination": "/api/demo.py" }
+    { "source": "/api/demo",    "destination": "/api/demo.py" },
+    { "source": "/",            "destination": "/api/index.py" }
   ]
 }
