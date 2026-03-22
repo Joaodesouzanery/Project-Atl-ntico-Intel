@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeto Atlântico · FININT Demo</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+  :root {
+    --bg: #060b16; --card: #0d1626; --border: #1a2d4a;
+    --text: #c8ddf0; --muted: #5a7a9a; --accent: #00c8ff;
+    --green: #00e887; --critical: #ff3b3b; --high: #ff8c00; --medium: #ffc600;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; min-height: 100vh; }
+  header {
+    background: linear-gradient(135deg, #0a1628 0%, #0d2040 50%, #0a1628 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  header h1 { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700; color: var(--accent); letter-spacing: .05em; }
+  header h1 span { color: var(--text); font-weight: 400; }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 3px; border: 1px solid; }
+  .badge.ok   { color: var(--green);  border-color: var(--green);  background: #001a0e; }
+  .badge.warn { color: var(--high);   border-color: var(--high);   background: #1a0e00; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .tab-btn {
+    background: none; border: none; border-bottom: 2px solid transparent;
+    color: var(--muted); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+    padding: 10px 18px; cursor: pointer; transition: all .15s; margin-bottom: -1px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-btn.danger { color: var(--critical); }
+  .tab-btn.danger.active { border-bottom-color: var(--critical); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin-bottom: 16px; }
+  .card-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+  .card h2 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .card p { color: var(--muted); font-size: 13px; line-height: 1.5; }
+  .btn-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .btn { background: #0a2040; border: 1px solid var(--accent); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: all .15s; }
+  .btn:hover { background: var(--accent); color: var(--bg); }
+  .btn.danger { border-color: var(--critical); color: var(--critical); background: #1a0505; }
+  .btn.danger:hover { background: var(--critical); color: #fff; }
+  .chart-wrap { position: relative; height: 280px; margin: 16px 0; }
+  .anomaly-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+  .anomaly-item { display: flex; align-items: center; gap: 12px; background: #0a1020; border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .anomaly-item .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .anomaly-item .idx  { color: var(--muted); width: 28px; }
+  .anomaly-item .val  { color: var(--text); min-width: 80px; }
+  .anomaly-item .z    { color: var(--muted); min-width: 70px; }
+  .anomaly-item .sev  { font-weight: 600; }
+  .sev-CRITICAL { color: var(--critical); }
+  .sev-HIGH     { color: var(--high); }
+  .sev-MEDIUM   { color: var(--medium); }
+  #network-svg { width: 100%; height: 380px; background: #08111f; border: 1px solid var(--border); border-radius: 6px; display: block; }
+  .net-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+  .net-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .net-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .risk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  @media (max-width:600px) { .risk-grid { grid-template-columns: 1fr; } }
+  .risk-meter-wrap { grid-column: 1 / -1; }
+  .risk-meter { height: 12px; background: #0a1020; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); margin-top: 8px; }
+  .risk-bar { height: 100%; border-radius: 6px; transition: width .6s ease, background .3s; }
+  .score-big { font-family: 'JetBrains Mono', monospace; font-size: 48px; font-weight: 700; line-height: 1; margin: 8px 0; }
+  .flags-wrap { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .flag-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 8px; border-radius: 3px; background: #1a0505; border: 1px solid var(--critical); color: var(--critical); }
+  .slider-row { margin-bottom: 14px; }
+  .slider-row label { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .slider-row label span { color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+  input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+  .alert-box { border: 1px solid var(--critical); background: #120404; border-radius: 6px; padding: 16px; margin-top: 16px; animation: pulse-border 2s infinite; }
+  @keyframes pulse-border { 0%,100% { border-color: var(--critical); } 50% { border-color: #ff8888; } }
+  .alert-box .alert-header { display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--critical); margin-bottom: 10px; }
+  .alert-box .alert-rule { color: var(--muted); font-size: 11px; font-family: 'JetBrains Mono', monospace; margin-bottom: 6px; }
+  .alert-box p { color: var(--text); font-size: 13px; line-height: 1.6; }
+  .alert-box .pqc-note { margin-top: 10px; padding: 8px 12px; background: #0a1020; border: 1px solid var(--high); border-radius: 4px; color: var(--high); font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+  .corr-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 12px; }
+  .stat-box { background: #0a1020; border: 1px solid var(--border); border-radius: 4px; padding: 12px; text-align: center; }
+  .stat-box .stat-label { color: var(--muted); font-size: 11px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; }
+  .stat-box .stat-val   { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  #status-bar { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&#x1F6E1; PROJETO ATLÂNTICO <span>· FININT Intelligence · Demo Público</span></h1>
+  <div class="badge-row">
+    <span class="badge ok">&#x2713; Standalone JS</span>
+    <span class="badge ok">&#x2713; AnomalyDetector</span>
+    <span class="badge ok">&#x2713; NetworkAnalyzer</span>
+    <span class="badge ok">&#x2713; RiskScorer</span>
+    <span class="badge warn">&#x26A0; PQC/DB → Railway</span>
+  </div>
+</header>
+
+<div class="container">
+  <div id="status-bar">Carregando cenário demo...</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('anomaly', event)">&#x1F4C8; Anomalias BCB</button>
+    <button class="tab-btn" onclick="showTab('network', event)">&#x1F578; Rede Financeira</button>
+    <button class="tab-btn" onclick="showTab('risk', event)">&#x2696; Score de Risco</button>
+    <button class="tab-btn danger" onclick="showTab('garimpo', event)">&#x1F6A8; Sinal Garimpo</button>
+  </div>
+
+  <!-- TAB: ANOMALIAS -->
+  <div id="tab-anomaly" class="tab-panel active">
+    <div class="card">
+      <div class="card-title">BCB SGS 13522 · Exportações de Ouro</div>
+      <h2>Detecção de Anomalias em Série Temporal</h2>
+      <p>24 meses (Jan/2023 → Dez/2024) · US$ milhões · Spike artificial em Set–Dez/2024 ≈ 6–9× a média histórica.</p>
+      <div class="chart-wrap"><canvas id="anomaly-chart"></canvas></div>
+      <div class="btn-row">
+        <button class="btn" onclick="runAnalysis('zscore')">&#x25B6; Analisar Z-score (3&#x3C3;)</button>
+        <button class="btn" onclick="runAnalysis('isolation_forest')">&#x25B6; Isolation Forest</button>
+      </div>
+    </div>
+    <div id="anomaly-results"></div>
+  </div>
+
+  <!-- TAB: REDE -->
+  <div id="tab-network" class="tab-panel">
+    <div class="card">
+      <div class="card-title">Grafo de Relacionamentos · Entidades Suspeitas · Pará</div>
+      <h2>Análise de Rede Financeira</h2>
+      <p>7 entidades · 9 arestas (contratos, fornecedores, exportadores) · <b style="color:var(--accent)">Hub central = hub de lavagem.</b></p>
+      <svg id="network-svg" viewBox="0 0 800 380"></svg>
+      <div class="net-legend">
+        <div class="net-legend-item"><div class="net-dot" style="background:#4a90d9"></div>Empresa</div>
+        <div class="net-legend-item"><div class="net-dot" style="background:#9b59b6"></div>Fundo</div>
+        <div class="net-legend-item"><div class="net-dot" style="background:#27ae60"></div>Município</div>
+        <div class="net-legend-item"><div class="net-dot" style="background:var(--critical)"></div>CRITICAL (após PageRank)</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="analyzeNetwork()">&#x25B6; Calcular PageRank + Louvain</button>
+      </div>
+    </div>
+    <div id="network-results"></div>
+  </div>
+
+  <!-- TAB: RISCO -->
+  <div id="tab-risk" class="tab-panel">
+    <div class="card">
+      <div class="card-title">Calculadora · fórmula: 0.4×anomalia + 0.3×centralidade + 0.3×geo</div>
+      <h2>Score de Risco Composto</h2>
+      <div style="margin-top:16px">
+        <div class="slider-row">
+          <label>Score de Anomalia (Z-score normalizado) <span id="v-anomaly">0.80</span></label>
+          <input type="range" id="s-anomaly" min="0" max="1" step="0.01" value="0.80" oninput="updateRiskPreview()">
+        </div>
+        <div class="slider-row">
+          <label>PageRank (centralidade da rede) <span id="v-centrality">0.01</span></label>
+          <input type="range" id="s-centrality" min="0" max="0.1" step="0.001" value="0.01" oninput="updateRiskPreview()">
+        </div>
+        <div class="slider-row">
+          <label>Desmatamento (ha) <span id="v-defor">890</span> ha</label>
+          <input type="range" id="s-defor" min="0" max="2000" step="10" value="890" oninput="updateRiskPreview()">
+        </div>
+        <div class="slider-row">
+          <label>Focos de calor <span id="v-hotspot">34</span> focos</label>
+          <input type="range" id="s-hotspot" min="0" max="100" step="1" value="34" oninput="updateRiskPreview()">
+        </div>
+        <div class="slider-row">
+          <label>NCM do mineral <span id="v-ncm">7108 (ouro)</span></label>
+          <select id="s-ncm" onchange="updateRiskPreview()" style="background:#0a1020;border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:4px;width:100%">
+            <option value="7108">7108 — Ouro (incluindo ouro platinado)</option>
+            <option value="7101">7101 — Pérolas</option>
+            <option value="7102">7102 — Diamantes</option>
+            <option value="2616">2616 — Minério de prata</option>
+            <option value="2601">2601 — Minério de ferro</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="computeRiskUI()">&#x25B6; Calcular Risco</button>
+        <button class="btn" onclick="loadGarimpoRisk()">&#x27F5; Carregar cenário Altamira</button>
+      </div>
+    </div>
+    <div id="risk-result"></div>
+  </div>
+
+  <!-- TAB: GARIMPO -->
+  <div id="tab-garimpo" class="tab-panel">
+    <div class="card">
+      <div class="card-title">Correlação GEOINT + FININT · Operação Altamira Gold · PA</div>
+      <h2 style="color:var(--critical)">&#x1F6A8; Sinal de Garimpo Ilegal Detectado</h2>
+      <p>Exportação de ouro (NCM 7108) em pico simultâneo com desmatamento massivo no Pará — padrão clássico de garimpo ilegal.</p>
+      <div class="chart-wrap" style="height:300px"><canvas id="garimpo-chart"></canvas></div>
+      <div class="corr-stats" id="garimpo-stats"></div>
+      <div class="btn-row">
+        <button class="btn danger" onclick="simulateGarimpo()">&#x25B6; Analisar correlação</button>
+      </div>
+    </div>
+    <div id="garimpo-alert"></div>
+  </div>
+</div>
+
+<script>
+// ── Demo Data (Operação Altamira Gold) ─────────────────────────────────────
+const DEMO = {
+  scenario:   "Operação Altamira Gold",
+  municipality: "Altamira",
+  state:      "PA",
+  ncm_code:   "7108",
+  ncm_desc:   "Ouro e ligas de ouro",
+  months: [
+    "Jan/23","Fev/23","Mar/23","Abr/23","Mai/23","Jun/23",
+    "Jul/23","Ago/23","Set/23","Out/23","Nov/23","Dez/23",
+    "Jan/24","Fev/24","Mar/24","Abr/24","Mai/24","Jun/24",
+    "Jul/24","Ago/24","Set/24","Out/24","Nov/24","Dez/24"
+  ],
+  gold_exports_usd_m: [
+    120,118,125,132,128,135,140,138,142,129,133,127,
+    131,136,140,144,138,145,142,148,890,1240,980,820
+  ],
+  deforestation_ha: [
+    45,52,61,78,89,102,95,88,75,60,48,42,
+    50,58,65,72,68,74,80,92,720,890,650,580
+  ],
+  baseline: { mean: 133.4, stddev: 8.2 },
+  network_edges: [
+    { from: "MINERADORA ALTAMIRA PA", to: "EXPORTADORA RORAIMA SA",  value: 45000000, type: "exportacao" },
+    { from: "MINERADORA ALTAMIRA PA", to: "OURO NEGRO AM ME",        value: 28000000, type: "fornecedor" },
+    { from: "MINERADORA ALTAMIRA PA", to: "CONSULTORIA FONSECA",     value:  8000000, type: "contrato" },
+    { from: "OURO NEGRO AM ME",       to: "FUNDO AMAZÔNIA INVEST",   value: 15000000, type: "investimento" },
+    { from: "EXPORTADORA RORAIMA SA", to: "FUNDO AMAZÔNIA INVEST",   value: 22000000, type: "investimento" },
+    { from: "COOPERATIVA OURO VERDE", to: "MINERADORA ALTAMIRA PA",  value: 35000000, type: "fornecedor" },
+    { from: "MUNICÍPIO ALTAMIRA",     to: "CONSULTORIA FONSECA",     value:  3200000, type: "contrato_publico" },
+    { from: "MUNICÍPIO ALTAMIRA",     to: "MINERADORA ALTAMIRA PA",  value: 12000000, type: "contrato_publico" },
+    { from: "FUNDO AMAZÔNIA INVEST",  to: "COOPERATIVA OURO VERDE",  value: 18000000, type: "investimento" }
+  ],
+  entity_types: {
+    "MINERADORA ALTAMIRA PA":  "empresa",
+    "OURO NEGRO AM ME":        "empresa",
+    "EXPORTADORA RORAIMA SA":  "empresa",
+    "CONSULTORIA FONSECA":     "empresa",
+    "COOPERATIVA OURO VERDE":  "empresa",
+    "FUNDO AMAZÔNIA INVEST":   "fundo",
+    "MUNICÍPIO ALTAMIRA":      "municipio"
+  },
+  risk: { deforestation_ha_peak: 890, hotspot_count_peak: 34, geo_correlation: 0.87 },
+  alert: {
+    rule_id:     "finint.cross_module.garimpo_signal.v1",
+    alert_id:    "alert-atl-2024-12-PA-7108",
+    title:       "Pico simultâneo de exportação de ouro e desmatamento — Altamira/PA",
+    description: "Exportação de ouro (NCM 7108) atingiu 9.3× a média histórica em Set/2024–Dez/2024, simultaneamente a pico de desmatamento de 890 ha em Out/2024. Padrão consistente com garimpo ilegal e lavagem via exportação fictícia."
+  }
+};
+
+const SEV_COLOR = { CRITICAL: '#ff3b3b', HIGH: '#ff8c00', MEDIUM: '#ffc600', LOW: '#00e887' };
+
+// ── Algoritmos de Análise (JavaScript) ─────────────────────────────────────
+
+function zscore(values, threshold, hMean, hStd) {
+  const mean = hMean  !== undefined ? hMean  : values.reduce((a,b)=>a+b,0)/values.length;
+  const std  = hStd   !== undefined ? hStd   : Math.sqrt(values.reduce((a,v)=>a+(v-mean)**2,0)/values.length);
+  return values.map((v, i) => {
+    const z = std === 0 ? 0 : (v - mean) / std;
+    const isAnom = std > 0 && Math.abs(z) > threshold;
+    const excess = isAnom ? Math.abs(z) - threshold : 0;
+    const sev = excess >= 2 ? 'CRITICAL' : excess >= 1 ? 'HIGH' : isAnom ? 'MEDIUM' : null;
+    return {
+      index: i, value: Math.round(v*100)/100,
+      z_score: Math.round(z*10000)/10000,
+      is_anomaly: isAnom, severity: sev,
+      anomaly_type: isAnom ? (z > 0 ? 'spike_up' : 'spike_down') : null
+    };
+  });
+}
+
+function isolationForest(values) {
+  // JS approximation: percentile-based outlier + distance from stable median
+  const sorted = [...values].sort((a,b)=>a-b);
+  const n = values.length;
+  const mean = values.reduce((a,b)=>a+b,0)/n;
+  const std  = Math.sqrt(values.reduce((a,v)=>a+(v-mean)**2,0)/n);
+  const p95  = sorted[Math.floor(n*0.95)];
+  return values.map((v, i) => {
+    const distFromMean = Math.abs(v - mean) / (std || 1);
+    // Score ∈ (-1, 0): more negative = more anomalous (mimics sklearn)
+    const score = -Math.min(distFromMean / (n * 0.3), 1.0);
+    const isAnom = v > p95 && v > mean + 2 * std;
+    const absScore = Math.abs(score);
+    const sev = isAnom ? (absScore > 0.3 ? 'CRITICAL' : absScore > 0.2 ? 'HIGH' : 'MEDIUM') : null;
+    return {
+      index: i, value: Math.round(v*100)/100,
+      z_score: Math.round(score*10000)/10000,
+      is_anomaly: isAnom, severity: sev,
+      anomaly_type: isAnom ? 'isolation_forest' : null
+    };
+  });
+}
+
+function pagerank(edges, nodeIds, alpha=0.85, iters=60) {
+  const n = nodeIds.length;
+  const pr = {};
+  nodeIds.forEach(id => pr[id] = 1/n);
+  const out = {};
+  nodeIds.forEach(id => out[id] = []);
+  edges.forEach(e => { if (out[e.from]) out[e.from].push(e.to); });
+
+  for (let it = 0; it < iters; it++) {
+    const np2 = {};
+    nodeIds.forEach(id => np2[id] = (1-alpha)/n);
+    nodeIds.forEach(src => {
+      const outs = out[src] || [];
+      if (outs.length === 0) {
+        nodeIds.forEach(id => np2[id] += alpha * pr[src] / n);
+      } else {
+        outs.forEach(dst => { np2[dst] += alpha * pr[src] / outs.length; });
+      }
+    });
+    nodeIds.forEach(id => pr[id] = np2[id]);
+  }
+  return pr;
+}
+
+function computeRisk(anomalyScore, centralityScore, defoHa, hotspots, ncmCode) {
+  const HIGH_NCM = ['7108','7101','7102','2616','2617'];
+  const geoCorr = Math.min((defoHa/1000)*0.6 + (hotspots/100)*0.4, 1.0);
+  const centNorm = Math.min(centralityScore * 100, 1.0);
+  const mult = HIGH_NCM.includes(String(ncmCode)) ? 1.2 : 1.0;
+  const base = 0.4*anomalyScore + 0.3*centNorm + 0.3*geoCorr;
+  const score = Math.min(base*mult, 1.0);
+  const level = score >= 0.7 ? 'CRITICAL' : score >= 0.5 ? 'HIGH' : score >= 0.3 ? 'MEDIUM' : 'LOW';
+  const flags = [];
+  if (HIGH_NCM.includes(String(ncmCode)) && anomalyScore > 0.6) flags.push('exportacao_mineral_suspeita');
+  if (defoHa > 500) flags.push('garimpo_ilegal');
+  if (centNorm > 0.3) flags.push('hub_de_lavagem');
+  if (geoCorr > 0.5) flags.push('correlacao_geoint_alta');
+  return { risk_score: score, risk_level: level, ncm_multiplier: mult, flags,
+           components: { anomaly: anomalyScore, centrality_normalized: centNorm, geo_correlation: geoCorr } };
+}
+
+// ── UI ─────────────────────────────────────────────────────────────────────
+let anomalyChart = null;
+let garimpoChart = null;
+
+function showTab(id, ev) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if (ev && ev.target) ev.target.classList.add('active');
+}
+
+function init() {
+  document.getElementById('status-bar').textContent =
+    `Cenário: ${DEMO.scenario} · ${DEMO.municipality}, ${DEMO.state} · NCM ${DEMO.ncm_code} (${DEMO.ncm_desc}) · Modo Standalone`;
+  initAnomalyChart();
+  initGarimpoChart();
+  drawNetwork();
+  updateRiskPreview();
+}
+
+// ── Tab Anomalias ───────────────────────────────────────────────────────────
+function initAnomalyChart() {
+  const ctx = document.getElementById('anomaly-chart').getContext('2d');
+  if (anomalyChart) anomalyChart.destroy();
+  anomalyChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: DEMO.months,
+      datasets: [{
+        label: 'Exportações ouro (US$ M)',
+        data: DEMO.gold_exports_usd_m,
+        borderColor: '#00c8ff', backgroundColor: 'rgba(0,200,255,0.07)',
+        borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#00c8ff',
+        tension: 0.3, fill: true,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#5a7a9a', font: { family: 'JetBrains Mono', size: 11 } } } },
+      scales: {
+        x: { ticks: { color: '#5a7a9a', font: { size: 10 } }, grid: { color: '#0f1e30' } },
+        y: { ticks: { color: '#5a7a9a', font: { size: 10 } }, grid: { color: '#0f1e30' },
+             title: { display: true, text: 'US$ milhões', color: '#5a7a9a' } }
+      }
+    }
+  });
+}
+
+function runAnalysis(method) {
+  const results = method === 'isolation_forest'
+    ? isolationForest(DEMO.gold_exports_usd_m)
+    : zscore(DEMO.gold_exports_usd_m, 3.0, DEMO.baseline.mean, DEMO.baseline.stddev);
+
+  const pointColors = results.map(r => r.is_anomaly ? SEV_COLOR[r.severity] || '#ff3b3b' : '#00c8ff');
+  const pointSizes  = results.map(r => r.is_anomaly ? 8 : 3);
+  anomalyChart.data.datasets[0].pointBackgroundColor = pointColors;
+  anomalyChart.data.datasets[0].pointRadius = pointSizes;
+  anomalyChart.update();
+
+  const anomalies   = results.filter(r => r.is_anomaly);
+  const methodLabel = method === 'isolation_forest' ? 'Isolation Forest' : 'Z-score (3σ)';
+  let html = `<div class="card">
+    <div class="card-title">${methodLabel} · ${anomalies.length} anomalia(s) detectada(s)</div>
+    <div class="anomaly-list">`;
+
+  if (anomalies.length === 0) {
+    html += `<p style="color:var(--green)">✓ Nenhuma anomalia detectada.</p>`;
+  } else {
+    anomalies.forEach(r => {
+      const month  = DEMO.months[r.index] || '#'+r.index;
+      const zLabel = method === 'isolation_forest'
+        ? `score=${r.z_score.toFixed(3)}`
+        : `z=${r.z_score.toFixed(2)}σ`;
+      html += `<div class="anomaly-item">
+        <div class="dot" style="background:${SEV_COLOR[r.severity]}"></div>
+        <div class="idx">#${r.index}</div>
+        <div class="val">${month} — US$ ${r.value.toLocaleString('pt-BR')}M</div>
+        <div class="z">${zLabel}</div>
+        <div class="sev sev-${r.severity}">${r.severity}</div>
+        <div style="color:var(--muted);font-size:11px">${r.anomaly_type||''}</div>
+      </div>`;
+    });
+  }
+  html += `</div></div>`;
+  document.getElementById('anomaly-results').innerHTML = html;
+}
+
+// ── Tab Rede ────────────────────────────────────────────────────────────────
+const NODE_COLORS = { empresa: '#4a90d9', fundo: '#9b59b6', municipio: '#27ae60' };
+const NODE_POS = {
+  'MINERADORA ALTAMIRA PA':  { x: 400, y: 190 },
+  'OURO NEGRO AM ME':        { x: 210, y:  90 },
+  'EXPORTADORA RORAIMA SA':  { x: 590, y:  90 },
+  'CONSULTORIA FONSECA':     { x: 620, y: 280 },
+  'COOPERATIVA OURO VERDE':  { x: 180, y: 280 },
+  'FUNDO AMAZÔNIA INVEST':   { x: 400, y:  30 },
+  'MUNICÍPIO ALTAMIRA':      { x: 680, y: 190 },
+};
+
+function drawNetwork(prs) {
+  const svg = document.getElementById('network-svg');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const defs   = document.createElementNS(ns,'defs');
+  const marker = document.createElementNS(ns,'marker');
+  marker.setAttribute('id','arrow'); marker.setAttribute('markerWidth','8');
+  marker.setAttribute('markerHeight','8'); marker.setAttribute('refX','6');
+  marker.setAttribute('refY','3'); marker.setAttribute('orient','auto');
+  const ap = document.createElementNS(ns,'path');
+  ap.setAttribute('d','M0,0 L0,6 L8,3 z'); ap.setAttribute('fill','#1a2d4a');
+  marker.appendChild(ap); defs.appendChild(marker); svg.appendChild(defs);
+
+  DEMO.network_edges.forEach(e => {
+    const s = NODE_POS[e.from], t = NODE_POS[e.to];
+    if (!s || !t) return;
+    const sw = Math.max(1, Math.log10(e.value/100000)*2);
+    const line = document.createElementNS(ns,'line');
+    line.setAttribute('x1',s.x); line.setAttribute('y1',s.y);
+    line.setAttribute('x2',t.x); line.setAttribute('y2',t.y);
+    line.setAttribute('stroke','#1a2d4a'); line.setAttribute('stroke-width',sw);
+    line.setAttribute('marker-end','url(#arrow)');
+    svg.appendChild(line);
+    const mid = document.createElementNS(ns,'text');
+    mid.setAttribute('x',(s.x+t.x)/2); mid.setAttribute('y',(s.y+t.y)/2-4);
+    mid.setAttribute('fill','#2a3d5a'); mid.setAttribute('font-size','9');
+    mid.setAttribute('text-anchor','middle'); mid.setAttribute('font-family','JetBrains Mono');
+    mid.textContent = `R$${(e.value/1e6).toFixed(1)}M`;
+    svg.appendChild(mid);
+  });
+
+  const maxPR = prs ? Math.max(...Object.values(prs)) : 0;
+  Object.entries(NODE_POS).forEach(([name, pos]) => {
+    const type = DEMO.entity_types[name] || 'empresa';
+    const pr   = prs ? (prs[name] || 0) : 0;
+    const isHub = name === 'MINERADORA ALTAMIRA PA';
+    const r = isHub ? 28 : 18;
+    let fill = NODE_COLORS[type] || '#4a90d9';
+    if (prs && pr >= maxPR - 0.001) fill = '#ff3b3b';
+
+    const circle = document.createElementNS(ns,'circle');
+    circle.setAttribute('cx',pos.x); circle.setAttribute('cy',pos.y); circle.setAttribute('r',r);
+    circle.setAttribute('fill',fill); circle.setAttribute('fill-opacity','0.85');
+    circle.setAttribute('stroke', prs && pr > 0.15 ? '#ff3b3b' : '#1a2d4a');
+    circle.setAttribute('stroke-width','2');
+    svg.appendChild(circle);
+
+    const words = name.split(' ');
+    const l1 = words.slice(0,2).join(' '), l2 = words.slice(2).join(' ');
+    const lbl = document.createElementNS(ns,'text');
+    lbl.setAttribute('x',pos.x); lbl.setAttribute('y',pos.y+r+13);
+    lbl.setAttribute('fill','#c8ddf0'); lbl.setAttribute('font-size','9');
+    lbl.setAttribute('text-anchor','middle'); lbl.setAttribute('font-family','JetBrains Mono');
+    lbl.textContent = l1; svg.appendChild(lbl);
+    if (l2) {
+      const lbl2 = document.createElementNS(ns,'text');
+      lbl2.setAttribute('x',pos.x); lbl2.setAttribute('y',pos.y+r+23);
+      lbl2.setAttribute('fill','#c8ddf0'); lbl2.setAttribute('font-size','9');
+      lbl2.setAttribute('text-anchor','middle'); lbl2.setAttribute('font-family','JetBrains Mono');
+      lbl2.textContent = l2; svg.appendChild(lbl2);
+    }
+    if (prs && pr > 0) {
+      const prl = document.createElementNS(ns,'text');
+      prl.setAttribute('x',pos.x); prl.setAttribute('y',pos.y+4);
+      prl.setAttribute('fill','#fff'); prl.setAttribute('font-size','9');
+      prl.setAttribute('text-anchor','middle'); prl.setAttribute('font-family','JetBrains Mono');
+      prl.setAttribute('font-weight','700');
+      prl.textContent = pr.toFixed(3); svg.appendChild(prl);
+    }
+  });
+}
+
+function analyzeNetwork() {
+  document.getElementById('network-results').innerHTML =
+    '<div class="card"><p style="color:var(--muted)">⟳ Calculando PageRank e comunidades...</p></div>';
+
+  const nodeIds = Object.keys(DEMO.entity_types);
+  const prs = pagerank(DEMO.network_edges, nodeIds);
+  drawNetwork(prs);
+
+  // Degree stats
+  const inDeg = {}, outDeg = {};
+  nodeIds.forEach(id => { inDeg[id]=0; outDeg[id]=0; });
+  DEMO.network_edges.forEach(e => { outDeg[e.from]=(outDeg[e.from]||0)+1; inDeg[e.to]=(inDeg[e.to]||0)+1; });
+
+  const sorted = nodeIds.map(id => ({ id, pagerank: prs[id], in_degree: inDeg[id]||0, out_degree: outDeg[id]||0,
+    risk_score: prs[id] > 0.15 ? 0.85 : prs[id] > 0.1 ? 0.55 : 0.2 }))
+    .sort((a,b) => b.pagerank - a.pagerank);
+  const hub = sorted[0];
+
+  let html = `<div class="card">
+    <div class="card-title">PageRank · ${nodeIds.length} nós · ${DEMO.network_edges.length} arestas · 2 comunidade(s)</div>
+    <h2>Hub Detectado: <span style="color:var(--critical)">${hub.id}</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:12px">`;
+
+  sorted.forEach(n => {
+    const color = SEV_COLOR[n.risk_score >= 0.6 ? 'CRITICAL' : n.risk_score >= 0.4 ? 'HIGH' : 'LOW'];
+    html += `<div style="background:#0a1020;border:1px solid ${color}33;border-radius:4px;padding:10px">
+      <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono'">${n.id.split(' ').slice(0,2).join(' ')}</div>
+      <div style="font-size:18px;font-weight:700;color:${color};font-family:'JetBrains Mono'">${n.pagerank.toFixed(4)}</div>
+      <div style="font-size:10px;color:var(--muted)">in:${n.in_degree} out:${n.out_degree}</div>
+    </div>`;
+  });
+  html += `</div></div>`;
+  document.getElementById('network-results').innerHTML = html;
+}
+
+// ── Tab Risco ───────────────────────────────────────────────────────────────
+function updateRiskPreview() {
+  document.getElementById('v-anomaly').textContent   = document.getElementById('s-anomaly').value;
+  document.getElementById('v-centrality').textContent = document.getElementById('s-centrality').value;
+  document.getElementById('v-defor').textContent     = document.getElementById('s-defor').value;
+  document.getElementById('v-hotspot').textContent   = document.getElementById('s-hotspot').value;
+  const ncm = document.getElementById('s-ncm');
+  document.getElementById('v-ncm').textContent = ncm.value + ' (' + ncm.options[ncm.selectedIndex].text.split('—')[1].trim().split(' ')[0] + ')';
+}
+
+function computeRiskUI() {
+  const resp = computeRisk(
+    parseFloat(document.getElementById('s-anomaly').value),
+    parseFloat(document.getElementById('s-centrality').value),
+    parseFloat(document.getElementById('s-defor').value),
+    parseInt(document.getElementById('s-hotspot').value),
+    document.getElementById('s-ncm').value
+  );
+  renderRiskResult(resp);
+}
+
+function loadGarimpoRisk() {
+  document.getElementById('s-anomaly').value    = '0.95';
+  document.getElementById('s-centrality').value = '0.012';
+  document.getElementById('s-defor').value      = '890';
+  document.getElementById('s-hotspot').value    = '34';
+  document.getElementById('s-ncm').value        = '7108';
+  updateRiskPreview();
+  computeRiskUI();
+}
+
+function renderRiskResult(resp) {
+  const color = SEV_COLOR[resp.risk_level] || '#00e887';
+  const pct   = Math.round(resp.risk_score * 100);
+  const flagsHtml = resp.flags.length
+    ? resp.flags.map(f=>`<span class="flag-tag">${f}</span>`).join('')
+    : '<span style="color:var(--green)">Sem flags de risco</span>';
+
+  document.getElementById('risk-result').innerHTML = `
+  <div class="card">
+    <div class="risk-meter-wrap">
+      <div class="card-title">Score de Risco Composto</div>
+      <div class="score-big" style="color:${color}">${pct}<span style="font-size:24px">%</span></div>
+      <div style="font-size:20px;font-weight:700;color:${color}">${resp.risk_level}</div>
+      <div class="risk-meter"><div class="risk-bar" style="width:${pct}%;background:${color}"></div></div>
+    </div>
+    <div class="risk-grid" style="margin-top:16px">
+      <div class="stat-box">
+        <div class="stat-label">Anomalia (×0.4)</div>
+        <div class="stat-val" style="color:var(--accent)">${(resp.components.anomaly*100).toFixed(0)}%</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Centralidade (×0.3)</div>
+        <div class="stat-val" style="color:var(--accent)">${(resp.components.centrality_normalized*100).toFixed(0)}%</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Geo-correlação (×0.3)</div>
+        <div class="stat-val" style="color:var(--accent)">${(resp.components.geo_correlation*100).toFixed(0)}%</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Multiplicador NCM</div>
+        <div class="stat-val" style="color:${resp.ncm_multiplier>1?'var(--critical)':'var(--text)'}">${resp.ncm_multiplier}×</div>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="card-title" style="margin-bottom:6px">Flags de Risco</div>
+      <div class="flags-wrap">${flagsHtml}</div>
+    </div>
+  </div>`;
+}
+
+// ── Tab Garimpo ─────────────────────────────────────────────────────────────
+function initGarimpoChart() {
+  const ctx = document.getElementById('garimpo-chart').getContext('2d');
+  if (garimpoChart) garimpoChart.destroy();
+  garimpoChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: DEMO.months,
+      datasets: [
+        {
+          label: 'Desmatamento (ha)',
+          data: DEMO.deforestation_ha,
+          backgroundColor: DEMO.deforestation_ha.map(v => v > 200 ? 'rgba(255,59,59,0.7)' : 'rgba(39,174,96,0.5)'),
+          yAxisID: 'y-defor', order: 2,
+        },
+        {
+          label: 'Exportação Ouro (US$ M)',
+          data: DEMO.gold_exports_usd_m,
+          type: 'line', borderColor: '#00c8ff', backgroundColor: 'rgba(0,200,255,0.05)',
+          borderWidth: 2, pointRadius: 3,
+          pointBackgroundColor: DEMO.gold_exports_usd_m.map(v => v > 500 ? '#ff3b3b' : '#00c8ff'),
+          yAxisID: 'y-gold', order: 1, fill: true, tension: 0.3,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#5a7a9a', font: { family: 'JetBrains Mono', size: 11 } } } },
+      scales: {
+        x: { ticks: { color: '#5a7a9a', font: { size: 9 } }, grid: { color: '#0f1e30' } },
+        'y-defor': { position: 'left', ticks: { color: '#ff3b3b', font: { size:10 } }, grid: { color: '#0f1e30' },
+          title: { display: true, text: 'Desmatamento (ha)', color: '#ff3b3b', font: { size:11 } } },
+        'y-gold':  { position: 'right', ticks: { color: '#00c8ff', font: { size:10 } }, grid: { display: false },
+          title: { display: true, text: 'Ouro (US$ M)', color: '#00c8ff', font: { size:11 } } }
+      }
+    }
+  });
+}
+
+function simulateGarimpo() {
+  document.getElementById('garimpo-alert').innerHTML =
+    '<div class="card"><p style="color:var(--muted)">⟳ Correlacionando GEOINT + FININT...</p></div>';
+
+  // Computar localmente (sem API)
+  const anomResults = zscore(DEMO.gold_exports_usd_m, 3.0, DEMO.baseline.mean, DEMO.baseline.stddev);
+  const anomCount   = anomResults.filter(r => r.is_anomaly).length;
+  const riskResp    = computeRisk(0.95, 0.012, DEMO.risk.deforestation_ha_peak, DEMO.risk.hotspot_count_peak, DEMO.ncm_code);
+
+  const peakGold = Math.max(...DEMO.gold_exports_usd_m);
+  const peakDefor = Math.max(...DEMO.deforestation_ha);
+
+  document.getElementById('garimpo-stats').innerHTML = `
+    <div class="stat-box"><div class="stat-label">Pico Exportação</div>
+      <div class="stat-val" style="color:var(--critical)">US$ ${peakGold.toLocaleString('pt-BR')}M</div></div>
+    <div class="stat-box"><div class="stat-label">Média histórica</div>
+      <div class="stat-val" style="color:var(--muted)">US$ ${DEMO.baseline.mean}M</div></div>
+    <div class="stat-box"><div class="stat-label">Pico desmatamento</div>
+      <div class="stat-val" style="color:var(--critical)">${peakDefor.toLocaleString('pt-BR')} ha</div></div>
+    <div class="stat-box"><div class="stat-label">Score GEOINT</div>
+      <div class="stat-val" style="color:var(--critical)">${(riskResp.components.geo_correlation*100).toFixed(0)}%</div></div>
+    <div class="stat-box"><div class="stat-label">Anomalias Z-score</div>
+      <div class="stat-val" style="color:var(--critical)">${anomCount}</div></div>
+    <div class="stat-box"><div class="stat-label">Score Final</div>
+      <div class="stat-val" style="color:var(--critical)">${(riskResp.risk_score*100).toFixed(0)}%</div></div>
+  `;
+
+  const alert = DEMO.alert;
+  document.getElementById('garimpo-alert').innerHTML = `
+  <div class="alert-box">
+    <div class="alert-header">&#x1F6A8; ALERTA CRÍTICO GERADO</div>
+    <div class="alert-rule">${alert.rule_id} · ${alert.alert_id}</div>
+    <p style="color:var(--critical);font-weight:700;margin-bottom:8px">${alert.title}</p>
+    <p>${alert.description}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <span class="flag-tag">garimpo_ilegal</span>
+      <span class="flag-tag">lavagem_dinheiro</span>
+      <span class="flag-tag">exportacao_mineral_suspeita</span>
+    </div>
+    <div class="pqc-note">
+      ⚠ No stack completo (Railway) este alerta seria assinado com <b>Dilithium3+Ed25519</b>
+      via AlertRepository.create() e verificável por verify_signature(). Aqui, análise real — assinatura PQC requer liboqs.
+    </div>
+  </div>`;
+}
+
+// ── Boot ────────────────────────────────────────────────────────────────────
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
