@@ -1,23 +1,9 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/*.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "50mb" }
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    { "src": "/api/health",  "dest": "/api/health.py" },
-    { "src": "/api/analyze", "dest": "/api/analyze.py" },
-    { "src": "/api/network", "dest": "/api/network.py" },
-    { "src": "/api/risk",    "dest": "/api/risk.py" },
-    { "src": "/api/demo",    "dest": "/api/demo.py" },
-    { "src": "/",            "dest": "/public/index.html" },
-    { "src": "/(.*)",        "dest": "/public/$1" }
+  "rewrites": [
+    { "source": "/api/health",  "destination": "/api/health.py" },
+    { "source": "/api/analyze", "destination": "/api/analyze.py" },
+    { "source": "/api/network", "destination": "/api/network.py" },
+    { "source": "/api/risk",    "destination": "/api/risk.py" },
+    { "source": "/api/demo",    "destination": "/api/demo.py" }
   ]
 }
