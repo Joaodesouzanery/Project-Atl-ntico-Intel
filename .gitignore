@@ -1,0 +1,59 @@
+# ─── Segredos (NUNCA commitar) ───────────────
+.env
+.env.local
+.env.production
+*.key
+*.pem
+*.p12
+*.pfx
+key_material/
+secrets/
+
+# ─── Python ───────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+.venv/
+venv/
+env/
+
+# ─── Testes ───────────────────────────────────
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.hypothesis/
+
+# ─── Ferramentas ──────────────────────────────
+.mypy_cache/
+.ruff_cache/
+.bandit/
+
+# ─── IDEs ─────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# ─── Docker ───────────────────────────────────
+docker-compose.override.yml
+
+# ─── Dados / Cache ────────────────────────────
+data/
+cache/
+*.log
+*.db
+*.sqlite
+
+# ─── OS ───────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+.vercel

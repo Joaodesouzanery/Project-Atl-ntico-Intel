@@ -1,0 +1,78 @@
+---
+# Projeto Atlântico — Override de Desenvolvimento
+#
+# USO:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+#
+# Diferenças em relação à produção:
+#   - PostgreSQL expõe porta 5432 externamente (para psql local e ferramentas)
+#   - Redis expõe porta 6379 externamente
+#   - API com hot-reload (uvicorn --reload)
+#   - Sem secrets de arquivo (usa variáveis de ambiente diretas para dev)
+#   - Volumes locais sem mount bind (usa volumes Docker padrão)
+#   - Log level DEBUG
+#   - Sem read_only nos containers (facilita debugging)
+
+name: atlantico
+
+services:
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: atlantico_dev_password  # Senha simples apenas para dev
+      POSTGRES_HOST_AUTH_METHOD: trust            # Sem autenticação em dev local
+    secrets: []
+    ports:
+      - "5432:5432"    # Acesso externo para ferramentas de desenvolvimento
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      # Sem mount de postgresql.conf customizado em dev
+
+  redis:
+    command: redis-server --loglevel verbose
+    secrets: []
+    ports:
+      - "6379:6379"    # Acesso externo para ferramentas de desenvolvimento
+
+  api:
+    build:
+      target: development
+    command: uvicorn atlantico.api.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      ATLANTICO_ENV: development
+      ATLANTICO_DB_HOST: postgres
+      ATLANTICO_DB_PORT: "5432"
+      ATLANTICO_DB_NAME: atlantico
+      ATLANTICO_DB_USER: atlantico_app
+      ATLANTICO_DB_PASSWORD: atlantico_dev_password
+      ATLANTICO_REDIS_URL: redis://redis:6379/0
+      ATLANTICO_LOG_LEVEL: DEBUG
+      # Chave mestra de desenvolvimento — 32 bytes de zeros em hex
+      ATLANTICO_MASTER_KEY_HEX: "0000000000000000000000000000000000000000000000000000000000000000"
+    secrets: []
+    ports:
+      - "8000:8000"    # Acesso externo à API
+    volumes:
+      - ../src:/app/src:ro    # Hot-reload via mount do código fonte
+    security_opt: []
+    read_only: false
+
+  worker:
+    build:
+      target: development
+    environment:
+      ATLANTICO_ENV: development
+      ATLANTICO_DB_HOST: postgres
+      ATLANTICO_DB_PORT: "5432"
+      ATLANTICO_DB_NAME: atlantico
+      ATLANTICO_DB_USER: atlantico_app
+      ATLANTICO_DB_PASSWORD: atlantico_dev_password
+      ATLANTICO_REDIS_URL: redis://redis:6379/0
+      ATLANTICO_LOG_LEVEL: DEBUG
+      ATLANTICO_MASTER_KEY_HEX: "0000000000000000000000000000000000000000000000000000000000000000"
+    secrets: []
+    security_opt: []
+    read_only: false
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:

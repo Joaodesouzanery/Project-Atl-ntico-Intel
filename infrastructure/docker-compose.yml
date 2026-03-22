@@ -1,0 +1,218 @@
+---
+# Projeto Atlântico — Infraestrutura de Produção
+#
+# SEGURANÇA:
+#   - Senhas via Docker Secrets (arquivo, não env vars)
+#   - Rede `backend` interna (sem acesso externo direto ao PostgreSQL/Redis)
+#   - `no-new-privileges:true` em todos os serviços
+#   - PostgreSQL sem acesso na porta 5432 externamente (apenas via rede interna)
+#   - Redis com autenticação obrigatória
+#
+# SECRETS:
+#   Criar antes de subir:
+#     mkdir -p infrastructure/secrets
+#     openssl rand -hex 32 > infrastructure/secrets/db_password.txt
+#     openssl rand -hex 32 > infrastructure/secrets/redis_password.txt
+#     openssl rand -hex 32 > infrastructure/secrets/master_key.txt
+#
+# STARTUP:
+#   docker compose up -d
+#   docker compose logs -f
+
+name: atlantico
+
+services:
+  # ─── PostgreSQL 16 + PostGIS 3.4 ─────────────────────────────────────────
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: atlantico-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: atlantico
+      POSTGRES_USER: atlantico_app
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      # Desabilita scram-sha-256 para compatibilidade com asyncpg
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    secrets:
+      - db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - ./docker/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atlantico_app -d atlantico"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    # PostgreSQL NÃO expõe porta externamente em produção
+    # Para acesso local de desenvolvimento: docker exec -it atlantico-postgres psql ...
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  # ─── Redis 7 ─────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: atlantico-redis
+    restart: unless-stopped
+    command: >
+      sh -c "redis-server
+        --requirepass $$(cat /run/secrets/redis_password)
+        --maxmemory 512mb
+        --maxmemory-policy allkeys-lru
+        --save 60 1000
+        --appendonly yes
+        --appendfsync everysec
+        --protected-mode yes
+        --bind 0.0.0.0"
+    secrets:
+      - redis_password
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  # ─── Aplicação FastAPI ───────────────────────────────────────────────────
+  api:
+    build:
+      context: ..
+      dockerfile: infrastructure/docker/Dockerfile
+      target: production
+    container_name: atlantico-api
+    restart: unless-stopped
+    environment:
+      ATLANTICO_ENV: production
+      ATLANTICO_DB_HOST: postgres
+      ATLANTICO_DB_PORT: "5432"
+      ATLANTICO_DB_NAME: atlantico
+      ATLANTICO_DB_USER: atlantico_app
+      ATLANTICO_REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      ATLANTICO_API_HOST: "0.0.0.0"
+      ATLANTICO_API_PORT: "8000"
+      ATLANTICO_API_WORKERS: "4"
+      ATLANTICO_LOG_LEVEL: INFO
+    secrets:
+      - db_password
+      - redis_password
+      - master_key
+    networks:
+      - backend
+      - frontend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "10"
+
+  # ─── Celery Worker (processamento assíncrono) ─────────────────────────────
+  worker:
+    build:
+      context: ..
+      dockerfile: infrastructure/docker/Dockerfile
+      target: production
+    container_name: atlantico-worker
+    restart: unless-stopped
+    command: celery -A atlantico.tasks worker --loglevel=info --concurrency=4
+    environment:
+      ATLANTICO_ENV: production
+      ATLANTICO_DB_HOST: postgres
+      ATLANTICO_DB_PORT: "5432"
+      ATLANTICO_DB_NAME: atlantico
+      ATLANTICO_DB_USER: atlantico_app
+      ATLANTICO_REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      ATLANTICO_LOG_LEVEL: INFO
+    secrets:
+      - db_password
+      - redis_password
+      - master_key
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+# ─── Volumes persistentes ─────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/atlantico/data/postgres
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/atlantico/data/redis
+
+# ─── Redes ───────────────────────────────────────────────────────────────
+networks:
+  backend:
+    driver: bridge
+    internal: true    # Sem rota para internet — apenas comunicação interna
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+  frontend:
+    driver: bridge    # Rede de acesso externo (apenas api e nginx)
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+
+# ─── Secrets (Docker Secrets) ────────────────────────────────────────────
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  redis_password:
+    file: ./secrets/redis_password.txt
+  master_key:
+    file: ./secrets/master_key.txt

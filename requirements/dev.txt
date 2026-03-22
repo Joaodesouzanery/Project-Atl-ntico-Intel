@@ -1,0 +1,21 @@
+-r base.txt
+
+# ─── Testes ──────────────────────────────────
+pytest>=8.3.0
+pytest-asyncio>=0.24.0
+pytest-cov>=6.0.0
+pytest-mock>=3.14.0
+respx>=0.21.0                # Mock HTTP assíncrono
+testcontainers[postgresql,redis]>=4.8.0
+httpx>=0.28.0                # Cliente de teste do FastAPI
+hypothesis>=6.0.0            # Testes baseados em propriedades (para cripto)
+freezegun>=1.5.0             # Mock de tempo (para testes de expiração de JWT)
+
+# ─── Qualidade de Código ─────────────────────
+ruff>=0.8.0
+mypy>=1.13.0
+bandit[toml]>=1.8.0          # Análise estática de segurança
+
+# ─── Dev Utils ───────────────────────────────
+ipython>=8.0.0
+rich>=13.0.0

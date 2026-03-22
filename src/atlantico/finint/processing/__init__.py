@@ -1,0 +1,1 @@
+"""Processadores de análise FININT."""
