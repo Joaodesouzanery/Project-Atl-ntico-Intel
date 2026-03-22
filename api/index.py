@@ -4,12 +4,13 @@ import os
 
 
 def _load_html() -> bytes:
-    """Lê o index.html do diretório raiz do projeto."""
-    # Vercel empacota os arquivos do projeto junto com a função
+    """Lê o _dashboard.html empacotado junto com a função Lambda."""
+    # _dashboard.html fica em api/ — mesmo diretório desta função
+    # Vercel inclui todos os arquivos de api/ no bundle da Lambda
     candidates = [
+        os.path.join(os.path.dirname(__file__), "_dashboard.html"),
         os.path.join(os.path.dirname(__file__), "..", "index.html"),
         os.path.join(os.path.dirname(__file__), "..", "public", "index.html"),
-        "/var/task/index.html",
     ]
     for path in candidates:
         try:
