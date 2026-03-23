@@ -251,17 +251,93 @@
   .tab-panel.active { display: block; }
 
   #status-bar { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 20px; }
+
+  /* ── SIGINT ── */
+  .sigint-grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0; }
+  @media (max-width:700px) { .sigint-grid-3 { grid-template-columns:1fr; } }
+  .sigint-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+  @media (max-width:600px) { .sigint-grid-2 { grid-template-columns:1fr; } }
+
+  .score-bar-wrap { margin:5px 0; }
+  .score-bar-label { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:3px; }
+  .score-bar-label span { font-family:'JetBrains Mono',monospace; }
+  .score-bar-track { height:7px; background:#0a1020; border-radius:4px; border:1px solid var(--border); overflow:hidden; }
+  .score-bar-fill  { height:100%; border-radius:4px; transition:width 0.7s ease; }
+  .cvss-bar .score-bar-fill  { background:linear-gradient(90deg,var(--low),var(--medium),var(--high),var(--critical)); }
+  .ctx-bar  .score-bar-fill  { background:var(--accent); }
+  .disinfo-bar .score-bar-fill { background:linear-gradient(90deg,var(--green),var(--medium),var(--critical)); }
+  .sent-bar .score-bar-fill  { background:var(--high); }
+
+  .mitre-pill { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10px; padding:2px 7px; border-radius:3px; border:1px solid var(--accent); color:var(--accent); background:#00182a; margin:2px 2px 2px 0; }
+  .mitre-pill.hi { border-color:var(--critical); color:var(--critical); background:#1a0505; }
+
+  .attack-chain { display:flex; align-items:center; gap:4px; overflow-x:auto; padding:10px 4px; flex-wrap:nowrap; scrollbar-width:thin; }
+  .chain-node { font-family:'JetBrains Mono',monospace; font-size:11px; background:#0d1626; border:1px solid var(--border); border-radius:4px; padding:5px 10px; white-space:nowrap; flex-shrink:0; }
+  .chain-node.init  { border-color:var(--high); color:var(--high); }
+  .chain-node.exec  { border-color:var(--critical); color:var(--critical); }
+  .chain-node.lat   { border-color:var(--medium); color:var(--medium); }
+  .chain-node.impact{ border-color:#ff3b3b; color:#ff3b3b; background:#120202; }
+  .chain-arrow { color:var(--muted); font-size:13px; flex-shrink:0; }
+
+  .playbook-phase { margin-bottom:6px; border:1px solid var(--border); border-radius:5px; overflow:hidden; }
+  .phase-header { background:#0a1020; padding:9px 14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight:600; font-size:12px; user-select:none; }
+  .phase-header:hover { background:#0f1a2e; }
+  .phase-chevron { font-size:10px; transition:transform 0.2s; }
+  .phase-body { display:none; }
+  .phase-body.open { display:block; }
+  .phase-body.open + .phase-header .phase-chevron,
+  .phase-header.open .phase-chevron { transform:rotate(90deg); }
+  .playbook-step { padding:9px 14px; border-top:1px solid var(--border); }
+  .step-action { font-size:12px; color:var(--text); line-height:1.4; }
+  .step-meta { display:flex; gap:6px; flex-wrap:wrap; margin-top:5px; }
+  .step-tag { font-family:'JetBrains Mono',monospace; font-size:10px; padding:1px 6px; border-radius:2px; background:#0a1020; border:1px solid var(--border); color:var(--muted); }
+  .step-tag.resp { border-color:var(--accent); color:var(--accent); }
+  .step-tag.prio-IMMEDIATE { border-color:var(--critical); color:var(--critical); background:#120202; }
+  .step-tag.prio-HIGH { border-color:var(--high); color:var(--high); }
+
+  .sigint-subnavrow { display:flex; gap:4px; margin-bottom:14px; }
+  .sigint-subbtn { font-size:12px; padding:6px 16px; font-family:'JetBrains Mono',monospace; border:1px solid var(--border); background:none; color:var(--muted); border-radius:4px; cursor:pointer; transition:all 0.15s; }
+  .sigint-subbtn:hover { color:var(--text); border-color:var(--text); }
+  .sigint-subbtn.active { border-color:var(--accent); color:var(--accent); background:#001528; }
+
+  .pqc-box { border:1px solid var(--accent); background:#001520; border-radius:4px; padding:10px 14px; margin-top:10px; font-size:12px; color:var(--accent); font-family:'JetBrains Mono',monospace; }
+  .pqc-box b { color:#fff; }
+
+  .narr-item { background:#0a1020; border:1px solid var(--border); border-radius:4px; padding:10px 14px; margin-bottom:8px; }
+  .narr-item.sev-threat  { border-color:var(--critical); }
+  .narr-item.sev-negative{ border-color:var(--high); }
+  .narr-title { font-size:13px; color:var(--text); font-weight:500; margin-bottom:6px; }
+  .kw-pill { display:inline-block; font-size:10px; font-family:'JetBrains Mono',monospace; padding:1px 6px; background:#001020; border:1px solid var(--border); border-radius:2px; color:var(--muted); margin:2px 2px 0 0; }
+
+  .campaign-card { background:#0a1020; border:1px solid var(--border); border-radius:5px; padding:12px 16px; margin-bottom:8px; }
+  .campaign-card.sev-CRITICAL { border-color:var(--critical); }
+  .campaign-card.sev-HIGH { border-color:var(--high); }
+  .campaign-name { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); }
+  .campaign-meta { display:flex; gap:8px; flex-wrap:wrap; margin:6px 0; }
+  .campaign-narrative { font-size:12px; color:var(--muted); font-style:italic; margin-top:6px; }
+
+  .chart-wrap-sm { position:relative; height:220px; }
+
+  .sev-badge { font-family:'JetBrains Mono',monospace; font-size:10px; padding:2px 8px; border-radius:3px; border:1px solid; }
+  .sev-badge.CRITICAL { color:var(--critical); border-color:var(--critical); background:#120202; }
+  .sev-badge.HIGH     { color:var(--high);     border-color:var(--high);     background:#1a0e00; }
+  .sev-badge.MEDIUM   { color:var(--medium);   border-color:var(--medium);   background:#1a1200; }
+  .sev-badge.LOW      { color:var(--low);      border-color:var(--low);      background:#001a0e; }
+  .sev-badge.INFO     { color:var(--muted);    border-color:var(--border);   background:#0a1020; }
+  .type-badge { font-family:'JetBrains Mono',monospace; font-size:10px; padding:2px 8px; border-radius:3px; border:1px solid var(--border); color:var(--muted); background:#0a1020; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🛡 PROJETO ATLÂNTICO <span>· FININT Intelligence · Demo Público</span></h1>
+  <h1>🛡 PROJETO ATLÂNTICO <span>· FININT · SIGINT · Demo Público</span></h1>
   <div class="badge-row">
     <span class="badge ok" id="badge-api">⟳ Conectando...</span>
     <span class="badge ok">✓ AnomalyDetector</span>
     <span class="badge ok">✓ NetworkAnalyzer</span>
     <span class="badge ok">✓ RiskScorer</span>
+    <span class="badge ok">✓ ThreatAnalyzer</span>
+    <span class="badge ok">✓ NarrativeAnalyzer</span>
     <span class="badge warn">⚠ PQC/DB → Railway</span>
   </div>
 </header>
@@ -274,6 +350,7 @@
     <button class="tab-btn" onclick="showTab('network')">🕸 Rede Financeira</button>
     <button class="tab-btn" onclick="showTab('risk')">⚖ Score de Risco</button>
     <button class="tab-btn danger" onclick="showTab('garimpo')">🚨 Sinal Garimpo</button>
+    <button class="tab-btn" onclick="showTab('sigint')">🛡 SIGINT</button>
   </div>
 
   <!-- ── TAB: ANOMALIAS ── -->
@@ -352,6 +429,69 @@
     <div id="risk-result"></div>
   </div>
 
+  <!-- ── TAB: SIGINT ── -->
+  <div id="tab-sigint" class="tab-panel">
+    <!-- A: Threat Center -->
+    <div class="card">
+      <div class="card-title">SIGINT · NVD CVE · CERT.br · OTX AlienVault · VirusTotal</div>
+      <h2>Centro de Ameaças Cibernéticas</h2>
+      <p>Análise contextual de CVEs, IOCs, narrativas e simulação de resposta a incidentes.</p>
+      <div class="btn-row">
+        <button class="btn" onclick="initSigint()">▶ Carregar SIGINT Demo</button>
+      </div>
+    </div>
+    <div id="sigint-threat-center"></div>
+
+    <!-- B: Panorama de Ameaças -->
+    <div id="sigint-landscape" style="display:none">
+      <div class="card">
+        <div class="card-title">Panorama de Ameaças · Distribuição Contextual</div>
+        <h2>Landscape de Ameaças</h2>
+        <div class="sigint-grid-3">
+          <div><div class="card-title" style="margin-bottom:8px">Severidade</div><div class="chart-wrap-sm"><canvas id="sigint-severity-chart"></canvas></div></div>
+          <div><div class="card-title" style="margin-bottom:8px">Top Técnicas MITRE ATT&amp;CK</div><div class="chart-wrap-sm"><canvas id="sigint-mitre-chart"></canvas></div></div>
+          <div><div class="card-title" style="margin-bottom:8px">Vetores de Ataque</div><div class="chart-wrap-sm"><canvas id="sigint-vector-chart"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C: Monitor de Narrativas -->
+    <div id="sigint-narratives" style="display:none">
+      <div class="card">
+        <div class="card-title">NLP · TF-IDF + NMF · Análise de Sentimento</div>
+        <h2>Monitor de Narrativas</h2>
+        <div id="sigint-narr-list"></div>
+      </div>
+    </div>
+
+    <!-- D: Campanhas de Desinformação -->
+    <div id="sigint-disinfo" style="display:none">
+      <div class="card">
+        <div class="card-title">Detecção de Desinformação · Agrupamento por Similaridade Cosseno</div>
+        <h2>Campanhas de Desinformação</h2>
+        <div id="sigint-campaigns-list"></div>
+      </div>
+    </div>
+
+    <!-- E: Simulação de Incidente -->
+    <div id="sigint-incident" style="display:none">
+      <div class="card">
+        <div class="card-title">Simulação NIST SP 800-61 · MITRE ATT&amp;CK · Playbook Automatizado</div>
+        <h2>Simulação de Resposta a Incidente</h2>
+        <div class="sigint-subnavrow">
+          <button class="sigint-subbtn active" id="inc-btn-ransomware" onclick="showSigintIncident('ransomware')">💀 Ransomware</button>
+          <button class="sigint-subbtn" id="inc-btn-apt" onclick="showSigintIncident('apt')">🕵 APT</button>
+        </div>
+        <div id="sigint-incident-body"></div>
+      </div>
+    </div>
+
+    <!-- F: Console de Alertas -->
+    <div id="sigint-alerts" style="display:none">
+      <div id="sigint-alert-box"></div>
+    </div>
+  </div>
+
   <!-- ── TAB: GARIMPO ── -->
   <div id="tab-garimpo" class="tab-panel">
     <div class="card">
@@ -374,6 +514,12 @@ let DEMO = null;
 let anomalyChart = null;
 let garimpoChart = null;
 const API = '';  // Mesmo origin no Vercel
+
+// SIGINT state
+let SIGINT = null;
+let sigintLoaded = false;
+let sigintSeverityChart = null, sigintMitreChart = null, sigintVectorChart = null;
+let _sigintIncidentData = null;
 
 // ── Utilitários ────────────────────────────────────────────────────────────
 const sev_color = { CRITICAL: '#ff3b3b', HIGH: '#ff8c00', MEDIUM: '#ffc600', LOW: '#00e887' };
@@ -417,6 +563,7 @@ function showTab(id) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
   event.target.classList.add('active');
+  if (id === 'sigint' && !sigintLoaded) initSigint();
 }
 
 // ── TAB: ANOMALIAS ─────────────────────────────────────────────────────────
@@ -866,6 +1013,300 @@ async function simulateGarimpo() {
       ⚠ Este alerta no stack completo (Railway) seria assinado com <b>Dilithium3+Ed25519</b>
       via AlertRepository.create() e verificável por AlertRepository.verify_signature().
       Aqui no Vercel, a análise é real — a assinatura PQC requer liboqs.
+    </div>
+  </div>`;
+}
+
+// ── TAB: SIGINT ────────────────────────────────────────────────────────────
+
+async function initSigint() {
+  const btn = document.querySelector('#tab-sigint .btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⟳ Carregando...'; }
+  try {
+    SIGINT = await apiFetch('/api/sigint_demo');
+    sigintLoaded = true;
+    renderThreatCenter(SIGINT);
+    renderThreatLandscape(SIGINT.threat_landscape);
+    renderNarrativeMonitor(SIGINT.nlp_analysis);
+    renderDisinfoCampaigns(SIGINT.disinfo_campaigns || []);
+    _sigintIncidentData = SIGINT.incident_simulation;
+    renderIncidentPlaybook(_sigintIncidentData, 'ransomware');
+    renderSigintAlerts(SIGINT.alert_preview);
+    ['sigint-landscape','sigint-narratives','sigint-disinfo','sigint-incident','sigint-alerts']
+      .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'block'; });
+  } catch (e) {
+    document.getElementById('sigint-threat-center').innerHTML =
+      `<div class="card"><p style="color:var(--critical)">Erro ao carregar SIGINT: ${e.message}</p></div>`;
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '↺ Recarregar'; }
+  }
+}
+
+function severityColor(sev) { return sev_color[sev] || '#5a7a9a'; }
+
+function scoreBar(label, value, max, cssClass) {
+  const pct = Math.min(100, (value / max) * 100).toFixed(1);
+  const val = typeof value === 'number' ? (max === 10 ? value.toFixed(1) : (value * 100).toFixed(0) + '%') : value;
+  return `<div class="score-bar-wrap ${cssClass}">
+    <div class="score-bar-label"><span>${label}</span><span>${val}${max === 10 ? '/10' : ''}</span></div>
+    <div class="score-bar-track"><div class="score-bar-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+function sevBadge(sev) { return `<span class="sev-badge ${sev}">${sev}</span>`; }
+function typeBadge(t)  { return `<span class="type-badge">${t}</span>`; }
+
+function renderThreatCenter(data) {
+  const ta = data.threat_analysis;
+  if (!ta) return;
+  const prio = ta.priority || ta.recommended_priority || 'HIGH';
+  const hiTechs = new Set(ta.high_impact_techniques || []);
+  const pills = (ta.mitre_techniques || []).map(t =>
+    `<span class="mitre-pill${hiTechs.has(t) ? ' hi' : ''}">${t}</span>`).join('');
+  const hints = (ta.mitigation_hints || []).map((h, i) =>
+    `<li style="margin-bottom:4px;color:var(--text)">${i+1}. ${h}</li>`).join('');
+  const exploit = ta.exploit_active
+    ? `<span style="color:var(--critical);font-family:'JetBrains Mono',monospace;font-size:11px">⚡ EXPLOIT ATIVO</span>`
+    : `<span style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:11px">✓ Sem IOC ativo</span>`;
+  const prioColor = prio === 'IMMEDIATE' ? 'var(--critical)' : 'var(--high)';
+  document.getElementById('sigint-threat-center').innerHTML = `
+  <div class="card" style="border-color:${severityColor(ta.severity)}20">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div>
+        <div class="card-title">CVE Crítico · CVSS ${ta.base_cvss}</div>
+        <h2 style="font-family:'JetBrains Mono',monospace;font-size:18px;color:${severityColor(ta.severity)}">${ta.cve_id || 'CVE-DEMO'}</h2>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        ${sevBadge(ta.severity)}
+        <span class="sev-badge" style="border-color:${prioColor};color:${prioColor}">⚡ ${prio}</span>
+        <span class="type-badge">📡 ${ta.attack_vector}</span>
+        ${exploit}
+      </div>
+    </div>
+    <div class="sigint-grid-2">
+      <div>
+        ${scoreBar('CVSS Score', ta.base_cvss, 10, 'cvss-bar')}
+        ${scoreBar('Score Contextual', ta.contextual_score, 1, 'ctx-bar')}
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-family:'JetBrains Mono',monospace;text-transform:uppercase">Técnicas MITRE ATT&CK</div>
+        <div>${pills || '<span style="color:var(--muted)">Nenhuma mapeada</span>'}</div>
+      </div>
+    </div>
+    ${hints ? `<div style="margin-top:12px"><div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-transform:uppercase;margin-bottom:6px">Mitigações Recomendadas</div><ol style="padding-left:0;list-style:none">${hints}</ol></div>` : ''}
+  </div>`;
+}
+
+function renderThreatLandscape(ls) {
+  if (!ls) return;
+  const chartOpts = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color:'#5a7a9a', font:{ family:'JetBrains Mono', size:10 } } } },
+  };
+  const darkScale = {
+    ticks: { color:'#5a7a9a', font:{ size:10 } },
+    grid: { color:'#0f1e30' },
+  };
+
+  // Severity doughnut
+  if (sigintSeverityChart) sigintSeverityChart.destroy();
+  const sevCtx = document.getElementById('sigint-severity-chart');
+  if (sevCtx) {
+    const sd = ls.severity_distribution || {};
+    const sevLabels = Object.keys(sd);
+    sigintSeverityChart = new Chart(sevCtx.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: sevLabels,
+        datasets: [{ data: Object.values(sd), backgroundColor: sevLabels.map(s => sev_color[s] || '#5a7a9a'), borderWidth: 1, borderColor: '#0d1626' }]
+      },
+      options: { ...chartOpts, cutout: '60%' }
+    });
+  }
+
+  // MITRE horizontal bar
+  if (sigintMitreChart) sigintMitreChart.destroy();
+  const mitreCtx = document.getElementById('sigint-mitre-chart');
+  if (mitreCtx) {
+    const top = (ls.top_mitre_techniques || []).slice(0, 6);
+    sigintMitreChart = new Chart(mitreCtx.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: top.map(t => t[0]),
+        datasets: [{ label: 'Ocorrências', data: top.map(t => t[1]), backgroundColor: '#00c8ff44', borderColor: '#00c8ff', borderWidth: 1 }]
+      },
+      options: { ...chartOpts, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: darkScale, y: { ...darkScale, ticks: { ...darkScale.ticks, font:{ family:'JetBrains Mono', size:9 } } } } }
+    });
+  }
+
+  // Attack vector bar
+  if (sigintVectorChart) sigintVectorChart.destroy();
+  const vecCtx = document.getElementById('sigint-vector-chart');
+  if (vecCtx) {
+    const vd = ls.attack_vector_distribution || {};
+    const vecColors = { NETWORK:'#ff3b3b', LOCAL:'#ff8c00', ADJACENT:'#ffc600', PHYSICAL:'#00e887' };
+    sigintVectorChart = new Chart(vecCtx.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(vd),
+        datasets: [{ label: 'Ameaças', data: Object.values(vd), backgroundColor: Object.keys(vd).map(v => (vecColors[v] || '#00c8ff') + '55'), borderColor: Object.keys(vd).map(v => vecColors[v] || '#00c8ff'), borderWidth: 1 }]
+      },
+      options: { ...chartOpts, plugins: { legend: { display: false } }, scales: { x: darkScale, y: darkScale } }
+    });
+  }
+}
+
+function renderNarrativeMonitor(items) {
+  if (!items || !items.length) return;
+  const html = items.map(item => {
+    const sentPct = Math.round((1 - item.sentiment_score) / 2 * 100);
+    const sentLabel = item.sentiment_label || 'neutral';
+    const disPct = Math.round((item.disinfo_score || 0) * 100);
+    const kws = (item.keywords || []).slice(0, 6).map(k => `<span class="kw-pill">${k}</span>`).join('');
+    const sevCls = sentLabel === 'threat' ? 'sev-threat' : sentLabel === 'negative' ? 'sev-negative' : '';
+    return `<div class="narr-item ${sevCls}">
+      <div class="narr-title">${item.title || item.item_id}</div>
+      <div class="sigint-grid-2" style="margin:6px 0">
+        <div>
+          ${scoreBar('Sentimento Negativo', sentPct, 100, 'sent-bar')}
+        </div>
+        <div>
+          ${scoreBar('Score Desinformação', item.disinfo_score || 0, 1, 'disinfo-bar')}
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span class="sev-badge ${sentLabel === 'threat' ? 'CRITICAL' : sentLabel === 'negative' ? 'HIGH' : 'INFO'}">${sentLabel.toUpperCase()}</span>
+        ${kws}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('sigint-narr-list').innerHTML = html;
+}
+
+function renderDisinfoCampaigns(campaigns) {
+  if (!campaigns || !campaigns.length) {
+    document.getElementById('sigint-campaigns-list').innerHTML =
+      '<p style="color:var(--muted);font-size:13px">Nenhuma campanha de desinformação detectada.</p>';
+    return;
+  }
+  const html = campaigns.map(c => `
+  <div class="campaign-card sev-${c.severity || 'MEDIUM'}">
+    <div class="campaign-name">${c.campaign_name || 'Campanha Detectada'}</div>
+    <div class="campaign-meta">
+      ${sevBadge(c.severity || 'MEDIUM')}
+      ${typeBadge(c.campaign_type || 'disinfo')}
+      <span class="type-badge">📰 ${c.item_count || 0} artigos</span>
+      <span class="type-badge">📡 ${c.source_count || 0} fontes</span>
+      ${scoreBar('Disinfo Score', c.disinfo_score || 0, 1, 'disinfo-bar')}
+    </div>
+    ${c.central_narrative ? `<div class="campaign-narrative">"${c.central_narrative.substring(0, 120)}${c.central_narrative.length > 120 ? '…' : ''}"</div>` : ''}
+  </div>`).join('');
+  document.getElementById('sigint-campaigns-list').innerHTML = html;
+}
+
+function renderIncidentPlaybook(incidents, type) {
+  if (!incidents || !incidents[type]) return;
+  const inc = incidents[type];
+
+  // Sub-tab buttons
+  document.querySelectorAll('.sigint-subbtn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.getElementById('inc-btn-' + type);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  // Attack chain
+  const chainHtml = (inc.attack_chain || []).map((step, i) => {
+    const tech = step.split(' — ')[0] || step;
+    const tactic = step.split(' — ')[1] || '';
+    const cls = tactic.includes('Initial') ? 'init' : tactic.includes('Impact') || tactic.includes('Ransomware') ? 'impact' : tactic.includes('Execution') ? 'exec' : tactic.includes('Lateral') ? 'lat' : '';
+    return `${i > 0 ? '<span class="chain-arrow">→</span>' : ''}<div class="chain-node ${cls}" title="${step}">${tech}</div>`;
+  }).join('');
+
+  // Playbook grouped by phase
+  const phaseOrder = ['preparation','identification','containment','eradication','recovery','lessons_learned'];
+  const phaseNames = { preparation:'Preparação', identification:'Identificação', containment:'Contenção', eradication:'Erradicação', recovery:'Recuperação', lessons_learned:'Lições Aprendidas' };
+  const phaseEmoji = { preparation:'🔧', identification:'🔍', containment:'🛡', eradication:'🗑', recovery:'🔄', lessons_learned:'📋' };
+  const steps = inc.playbook || [];
+  const byPhase = {};
+  phaseOrder.forEach(p => { byPhase[p] = []; });
+  steps.forEach(s => { if (byPhase[s.phase]) byPhase[s.phase].push(s); });
+
+  const accordionHtml = phaseOrder.map((phase, pi) => {
+    const phaseSteps = byPhase[phase];
+    if (!phaseSteps.length) return '';
+    const stepsHtml = phaseSteps.map(s => `
+      <div class="playbook-step">
+        <div class="step-action">${s.action}</div>
+        <div class="step-meta">
+          <span class="step-tag resp">${s.responsible}</span>
+          <span class="step-tag prio-${s.priority}">${s.priority}</span>
+          <span class="step-tag">⏱ ${s.estimated_time}</span>
+          ${(s.tools || []).slice(0,3).map(t => `<span class="step-tag">${t}</span>`).join('')}
+        </div>
+        ${s.success_criteria ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">✓ ${s.success_criteria}</div>` : ''}
+      </div>`).join('');
+    const isFirst = pi === 0;
+    return `<div class="playbook-phase">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <span>${phaseEmoji[phase]} ${phaseNames[phase]} <span style="color:var(--muted);font-size:10px;font-weight:400">(${phaseSteps.length} ações)</span></span>
+        <span class="phase-chevron">▶</span>
+      </div>
+      <div class="phase-body${isFirst ? ' open' : ''}">${stepsHtml}</div>
+    </div>`;
+  }).join('');
+
+  // Countermeasures
+  const cmHtml = (inc.countermeasures || []).map(c =>
+    `<li style="margin-bottom:5px;color:var(--text);font-size:12px">✓ ${c}</li>`).join('');
+
+  // PQC relevance
+  const pqcHtml = inc.pqc_relevance
+    ? `<div class="pqc-box">🔐 <b>Relevância PQC:</b> ${inc.pqc_relevance}</div>` : '';
+
+  // Stats row
+  const statsHtml = `<div class="corr-stats" style="margin-bottom:16px">
+    <div class="stat-box"><div class="stat-label">Tipo</div><div class="stat-val" style="font-size:14px;color:${severityColor(inc.severity || 'HIGH')}">${(inc.incident_type || type).toUpperCase()}</div></div>
+    <div class="stat-box"><div class="stat-label">Severidade</div><div class="stat-val" style="font-size:14px;color:${severityColor(inc.severity || 'HIGH')}">${inc.severity || 'HIGH'}</div></div>
+    <div class="stat-box"><div class="stat-label">Etapas</div><div class="stat-val" style="font-size:14px;color:var(--accent)">${inc.playbook_steps || steps.length}</div></div>
+    <div class="stat-box"><div class="stat-label">Recuperação</div><div class="stat-val" style="font-size:14px;color:var(--high)">${inc.recovery_time || inc.recovery_time_estimate || 'N/A'}</div></div>
+  </div>`;
+
+  document.getElementById('sigint-incident-body').innerHTML = `
+    ${statsHtml}
+    <div style="margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:6px">Cadeia de Ataque MITRE ATT&CK</div>
+      <div class="attack-chain">${chainHtml}</div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:8px">Playbook de Resposta (NIST SP 800-61)</div>
+      ${accordionHtml}
+    </div>
+    ${cmHtml ? `<div><div class="card-title" style="margin-bottom:8px">Contramedidas</div><ul style="list-style:none;padding:0">${cmHtml}</ul></div>` : ''}
+    ${pqcHtml}
+  `;
+}
+
+function togglePhase(headerEl) {
+  const body = headerEl.nextElementSibling;
+  const chevron = headerEl.querySelector('.phase-chevron');
+  const isOpen = body.classList.toggle('open');
+  if (chevron) chevron.style.transform = isOpen ? 'rotate(90deg)' : '';
+}
+
+function showSigintIncident(type) {
+  if (_sigintIncidentData) renderIncidentPlaybook(_sigintIncidentData, type);
+}
+
+function renderSigintAlerts(alertPreview) {
+  if (!alertPreview) return;
+  const sevCol = severityColor(alertPreview.severity || 'CRITICAL');
+  document.getElementById('sigint-alert-box').innerHTML = `
+  <div class="alert-box" style="border-color:${sevCol}">
+    <div class="alert-header" style="color:${sevCol}">🚨 ALERTA SIGINT GERADO</div>
+    <div class="alert-rule">${alertPreview.rule_id}</div>
+    <p style="color:${sevCol};font-weight:700;margin-bottom:8px">${alertPreview.title}</p>
+    <div class="pqc-note">
+      🔐 Assinatura PQC: <b>${alertPreview.pqc_signed || 'Dilithium3+Ed25519'}</b> · No stack completo (Railway) este alerta
+      seria assinado pelo AlertRepository.create() e verificável via AlertRepository.verify_signature().
     </div>
   </div>`;
 }

@@ -86,17 +86,21 @@
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
   #status-bar { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 20px; }
+  /* SIGINT */
+  .sigint-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}.sigint-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}@media(max-width:700px){.sigint-grid-3{grid-template-columns:1fr}}@media(max-width:600px){.sigint-grid-2{grid-template-columns:1fr}}.score-bar-wrap{margin:5px 0}.score-bar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:3px}.score-bar-label span{font-family:'JetBrains Mono',monospace}.score-bar-track{height:7px;background:#0a1020;border-radius:4px;border:1px solid var(--border);overflow:hidden}.score-bar-fill{height:100%;border-radius:4px;transition:width .7s ease}.cvss-bar .score-bar-fill{background:linear-gradient(90deg,var(--low),var(--medium),var(--high),var(--critical))}.ctx-bar .score-bar-fill{background:var(--accent)}.disinfo-bar .score-bar-fill{background:linear-gradient(90deg,var(--green),var(--medium),var(--critical))}.sent-bar .score-bar-fill{background:var(--high)}.mitre-pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 7px;border-radius:3px;border:1px solid var(--accent);color:var(--accent);background:#00182a;margin:2px 2px 2px 0}.mitre-pill.hi{border-color:var(--critical);color:var(--critical);background:#1a0505}.attack-chain{display:flex;align-items:center;gap:4px;overflow-x:auto;padding:10px 4px;flex-wrap:nowrap}.chain-node{font-family:'JetBrains Mono',monospace;font-size:11px;background:#0d1626;border:1px solid var(--border);border-radius:4px;padding:5px 10px;white-space:nowrap;flex-shrink:0}.chain-node.init{border-color:var(--high);color:var(--high)}.chain-node.exec{border-color:var(--critical);color:var(--critical)}.chain-node.lat{border-color:var(--medium);color:var(--medium)}.chain-node.impact{border-color:#ff3b3b;color:#ff3b3b;background:#120202}.chain-arrow{color:var(--muted);font-size:13px;flex-shrink:0}.playbook-phase{margin-bottom:6px;border:1px solid var(--border);border-radius:5px;overflow:hidden}.phase-header{background:#0a1020;padding:9px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:12px;user-select:none}.phase-header:hover{background:#0f1a2e}.phase-chevron{font-size:10px;transition:transform .2s}.phase-body{display:none}.phase-body.open{display:block}.playbook-step{padding:9px 14px;border-top:1px solid var(--border)}.step-action{font-size:12px;color:var(--text);line-height:1.4}.step-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}.step-tag{font-family:'JetBrains Mono',monospace;font-size:10px;padding:1px 6px;border-radius:2px;background:#0a1020;border:1px solid var(--border);color:var(--muted)}.step-tag.resp{border-color:var(--accent);color:var(--accent)}.step-tag.prio-IMMEDIATE{border-color:var(--critical);color:var(--critical);background:#120202}.step-tag.prio-HIGH{border-color:var(--high);color:var(--high)}.sigint-subnavrow{display:flex;gap:4px;margin-bottom:14px}.sigint-subbtn{font-size:12px;padding:6px 16px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);background:none;color:var(--muted);border-radius:4px;cursor:pointer;transition:all .15s}.sigint-subbtn:hover{color:var(--text);border-color:var(--text)}.sigint-subbtn.active{border-color:var(--accent);color:var(--accent);background:#001528}.pqc-box{border:1px solid var(--accent);background:#001520;border-radius:4px;padding:10px 14px;margin-top:10px;font-size:12px;color:var(--accent);font-family:'JetBrains Mono',monospace}.narr-item{background:#0a1020;border:1px solid var(--border);border-radius:4px;padding:10px 14px;margin-bottom:8px}.narr-item.sev-threat{border-color:var(--critical)}.narr-item.sev-negative{border-color:var(--high)}.narr-title{font-size:13px;color:var(--text);font-weight:500;margin-bottom:6px}.kw-pill{display:inline-block;font-size:10px;font-family:'JetBrains Mono',monospace;padding:1px 6px;background:#001020;border:1px solid var(--border);border-radius:2px;color:var(--muted);margin:2px 2px 0 0}.campaign-card{background:#0a1020;border:1px solid var(--border);border-radius:5px;padding:12px 16px;margin-bottom:8px}.campaign-card.sev-CRITICAL{border-color:var(--critical)}.campaign-card.sev-HIGH{border-color:var(--high)}.campaign-name{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent)}.campaign-meta{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}.campaign-narrative{font-size:12px;color:var(--muted);font-style:italic;margin-top:6px}.chart-wrap-sm{position:relative;height:220px}.sev-badge{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;border-radius:3px;border:1px solid}.sev-badge.CRITICAL{color:var(--critical);border-color:var(--critical);background:#120202}.sev-badge.HIGH{color:var(--high);border-color:var(--high);background:#1a0e00}.sev-badge.MEDIUM{color:var(--medium);border-color:var(--medium);background:#1a1200}.sev-badge.LOW{color:var(--low);border-color:var(--low);background:#001a0e}.sev-badge.INFO{color:var(--muted);border-color:var(--border);background:#0a1020}.type-badge{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;border-radius:3px;border:1px solid var(--border);color:var(--muted);background:#0a1020}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>&#x1F6E1; PROJETO ATLÂNTICO <span>· FININT Intelligence · Demo Público</span></h1>
+  <h1>&#x1F6E1; PROJETO ATLÂNTICO <span>· FININT · SIGINT · Demo Público</span></h1>
   <div class="badge-row">
     <span class="badge ok">&#x2713; Standalone JS</span>
     <span class="badge ok">&#x2713; AnomalyDetector</span>
     <span class="badge ok">&#x2713; NetworkAnalyzer</span>
     <span class="badge ok">&#x2713; RiskScorer</span>
+    <span class="badge ok">&#x2713; ThreatAnalyzer</span>
+    <span class="badge ok">&#x2713; NarrativeAnalyzer</span>
     <span class="badge warn">&#x26A0; PQC/DB → Railway</span>
   </div>
 </header>
@@ -109,6 +113,7 @@
     <button class="tab-btn" onclick="showTab('network', event)">&#x1F578; Rede Financeira</button>
     <button class="tab-btn" onclick="showTab('risk', event)">&#x2696; Score de Risco</button>
     <button class="tab-btn danger" onclick="showTab('garimpo', event)">&#x1F6A8; Sinal Garimpo</button>
+    <button class="tab-btn" onclick="showTab('sigint', event)">&#x1F6E1; SIGINT</button>
   </div>
 
   <!-- TAB: ANOMALIAS -->
@@ -200,6 +205,58 @@
       </div>
     </div>
     <div id="garimpo-alert"></div>
+  </div>
+
+  <!-- TAB: SIGINT -->
+  <div id="tab-sigint" class="tab-panel">
+    <div class="card">
+      <div class="card-title">SIGINT · NVD CVE · CERT.br · OTX AlienVault · VirusTotal</div>
+      <h2>Centro de Ameaças Cibernéticas</h2>
+      <p>Análise contextual de CVEs, IOCs, narrativas e simulação de resposta a incidentes (dados mock — modo standalone).</p>
+      <div class="btn-row">
+        <button class="btn" onclick="initSigint()">&#x25B6; Carregar SIGINT Demo</button>
+      </div>
+    </div>
+    <div id="sigint-threat-center"></div>
+    <div id="sigint-landscape" style="display:none">
+      <div class="card">
+        <div class="card-title">Panorama de Ameaças · Distribuição Contextual</div>
+        <h2>Landscape de Ameaças</h2>
+        <div class="sigint-grid-3">
+          <div><div class="card-title" style="margin-bottom:8px">Severidade</div><div class="chart-wrap-sm"><canvas id="sigint-severity-chart"></canvas></div></div>
+          <div><div class="card-title" style="margin-bottom:8px">Top Técnicas MITRE ATT&amp;CK</div><div class="chart-wrap-sm"><canvas id="sigint-mitre-chart"></canvas></div></div>
+          <div><div class="card-title" style="margin-bottom:8px">Vetores de Ataque</div><div class="chart-wrap-sm"><canvas id="sigint-vector-chart"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="sigint-narratives" style="display:none">
+      <div class="card">
+        <div class="card-title">NLP · TF-IDF + NMF · Análise de Sentimento</div>
+        <h2>Monitor de Narrativas</h2>
+        <div id="sigint-narr-list"></div>
+      </div>
+    </div>
+    <div id="sigint-disinfo" style="display:none">
+      <div class="card">
+        <div class="card-title">Detecção de Desinformação</div>
+        <h2>Campanhas de Desinformação</h2>
+        <div id="sigint-campaigns-list"></div>
+      </div>
+    </div>
+    <div id="sigint-incident" style="display:none">
+      <div class="card">
+        <div class="card-title">Simulação NIST SP 800-61 · MITRE ATT&amp;CK · Playbook Automatizado</div>
+        <h2>Simulação de Resposta a Incidente</h2>
+        <div class="sigint-subnavrow">
+          <button class="sigint-subbtn active" id="inc-btn-ransomware" onclick="showSigintIncident('ransomware')">&#x1F480; Ransomware</button>
+          <button class="sigint-subbtn" id="inc-btn-apt" onclick="showSigintIncident('apt')">&#x1F575; APT</button>
+        </div>
+        <div id="sigint-incident-body"></div>
+      </div>
+    </div>
+    <div id="sigint-alerts" style="display:none">
+      <div id="sigint-alert-box"></div>
+    </div>
   </div>
 </div>
 
@@ -344,11 +401,96 @@ function computeRisk(anomalyScore, centralityScore, defoHa, hotspots, ncmCode) {
 let anomalyChart = null;
 let garimpoChart = null;
 
+// SIGINT state
+let sigintLoaded = false;
+let sigintSeverityChart = null, sigintMitreChart = null, sigintVectorChart = null;
+let _sigintIncidentData = null;
+
+// SIGINT mock data (standalone mode — mirrors /api/sigint_demo response)
+const SIGINT_MOCK = {
+  scenario: "Operação Vigilância Atlântico",
+  threat_analysis: {
+    cve_id: "CVE-2024-12345", base_cvss: 9.8, contextual_score: 0.89,
+    severity: "CRITICAL", priority: "IMMEDIATE", exploit_active: false,
+    attack_vector: "NETWORK", mitre_techniques: ["T1059","T1190","T1068"],
+    high_impact_techniques: ["T1059","T1190"], critical_products: ["scada","vpn"],
+    mitigation_hints: [
+      "Aplicar patch imediatamente — sem workaround disponível.",
+      "Isolar sistemas SCADA da rede corporativa.",
+      "Habilitar autenticação multifator em todos os acessos remotos.",
+      "Monitorar tráfego de rede em busca de tentativas de exploração.",
+      "Revisar regras de firewall para bloquear acesso não autorizado."
+    ]
+  },
+  threat_landscape: {
+    total_threats: 6,
+    top_mitre_techniques: [["T1059",2],["T1486",1],["T1566",1],["T1190",1],["T1600",1]],
+    severity_distribution: { CRITICAL: 2, HIGH: 3, MEDIUM: 1 },
+    attack_vector_distribution: { NETWORK: 5, LOCAL: 1 },
+    critical_product_exposure: [["scada",2],["vpn",1],["cryptography",1]]
+  },
+  nlp_analysis: [
+    { item_id:"n1", title:"Ransomware LockBit ataca hospitais brasileiros", sentiment_score:-0.72, sentiment_label:"threat", disinfo_score:0.18, keywords:["ransomware","lockbit","hospitais","crítico","ataque"] },
+    { item_id:"n2", title:"Hospitais sob ataque LockBit ransomware", sentiment_score:-0.68, sentiment_label:"threat", disinfo_score:0.22, keywords:["lockbit","ransomware","hospitais","emergência","urgente"] },
+    { item_id:"n3", title:"Desinformação coordenada sobre vacinas fake news", sentiment_score:-0.45, sentiment_label:"negative", disinfo_score:0.82, keywords:["fake news","desinformação","propaganda","manipulação","boato"] },
+    { item_id:"n4", title:"Fake news sobre sistema eleitoral", sentiment_score:-0.52, sentiment_label:"negative", disinfo_score:0.88, keywords:["narrativa falsa","desinformação","propaganda","astroturfing","fabricado"] },
+    { item_id:"n5", title:"Patch de segurança Apache liberado", sentiment_score:0.15, sentiment_label:"neutral", disinfo_score:0.05, keywords:["patch","segurança","apache","vulnerabilidade","atualização"] }
+  ],
+  disinfo_campaigns: [
+    { campaign_name:"Narrativa-cluster-20260323-001", campaign_type:"amplification", disinfo_score:0.20, severity:"LOW", item_count:2, source_count:2, central_narrative:"Ransomware LockBit ataca hospitais brasileiros" },
+    { campaign_name:"Narrativa-cluster-20260323-002", campaign_type:"disinfo", disinfo_score:0.85, severity:"HIGH", item_count:2, source_count:2, central_narrative:"Desinformação coordenada sobre vacinas fake news" }
+  ],
+  incident_simulation: {
+    ransomware: {
+      incident_type:"ransomware", severity:"CRITICAL",
+      affected_systems:["file_servers","databases","email","workstations"],
+      attack_chain:["T1566 — Initial Access (Phishing)","T1059 — Execution","T1486 — Impact (Ransomware)","T1490 — Impact (Inhibit Recovery)"],
+      recovery_time:"3-7 dias", playbook_steps:8,
+      playbook:[
+        {step_number:1,phase:"identification",action:"Confirmar e caracterizar o incidente (ransomware). Documentar hora, sistemas afetados e vetor inicial.",responsible:"SOC",priority:"IMMEDIATE",estimated_time:"15min",tools:["SIEM","EDR","NetFlow"],success_criteria:"Incidente confirmado e classificado com severidade definida."},
+        {step_number:2,phase:"containment",action:"Isolar imediatamente os sistemas afetados da rede corporativa para evitar propagação lateral.",responsible:"SOC",priority:"IMMEDIATE",estimated_time:"30min",tools:["Firewall","NAC","EDR"],success_criteria:"Sistemas afetados isolados sem propagação adicional detectada."},
+        {step_number:3,phase:"containment",action:"Preservar evidências forenses — capturar imagens de memória RAM e snapshots de disco antes de qualquer intervenção.",responsible:"IR_TEAM",priority:"HIGH",estimated_time:"1h",tools:["FTK","Volatility","dd"],success_criteria:"Imagens forenses coletadas e armazenadas de forma segura."},
+        {step_number:4,phase:"eradication",action:"Identificar e remover todos os artefatos do ransomware, incluindo mecanismos de persistência e backdoors.",responsible:"IR_TEAM",priority:"HIGH",estimated_time:"4-8h",tools:["EDR","AV","Autoruns"],success_criteria:"Nenhum artefato malicioso detectado pelos scanners."},
+        {step_number:5,phase:"recovery",action:"Restaurar sistemas a partir de backups verificados e anteriores ao incidente.",responsible:"SYS_ADMIN",priority:"HIGH",estimated_time:"24h",tools:["Backup Manager","Veeam","Restore"],success_criteria:"Sistemas operacionais restaurados com dados íntegros."},
+        {step_number:6,phase:"recovery",action:"Validar integridade dos dados restaurados e verificar ausência de reinfecção.",responsible:"SYS_ADMIN",priority:"HIGH",estimated_time:"4h",tools:["Hash Checker","AV","EDR"],success_criteria:"Todos os checksums validados. Sistemas sem indicadores de compromisso."},
+        {step_number:7,phase:"lessons_learned",action:"Realizar reunião post-mortem com todos os stakeholders. Documentar linha do tempo, impacto e decisões tomadas.",responsible:"CISO",priority:"MEDIUM",estimated_time:"2h",tools:["Relatório","JIRA","Confluence"],success_criteria:"Relatório final aprovado com lições aprendidas e ações corretivas definidas."},
+        {step_number:8,phase:"lessons_learned",action:"Atualizar plano de resposta a incidentes com base nas lições aprendidas. Implementar controles adicionais.",responsible:"CISO",priority:"MEDIUM",estimated_time:"1 semana",tools:["Policy","Playbook","Treinamento"],success_criteria:"Novo playbook publicado e equipe treinada."}
+      ],
+      countermeasures:["Implementar backup 3-2-1 com cópias offline.","Treinar usuários para identificar phishing.","Segmentar rede — isolar sistemas críticos.","Habilitar MFA em todos os acessos.","Atualizar EDR com assinaturas de LockBit.","Implementar lista branca de aplicações."],
+      pqc_relevance: null
+    },
+    apt: {
+      incident_type:"apt", severity:"HIGH",
+      affected_systems:["workstations","network","email","databases"],
+      attack_chain:["T1566 — Initial Access (Phishing)","T1059 — Execution","T1021 — Lateral Movement","T1600 — Weaken Encryption"],
+      recovery_time:"1-4 semanas", playbook_steps:8,
+      playbook:[
+        {step_number:1,phase:"identification",action:"Detectar padrões de exfiltração de dados e movimentação lateral suspeita na rede.",responsible:"SOC",priority:"IMMEDIATE",estimated_time:"2h",tools:["SIEM","IDS","NetFlow"],success_criteria:"Escopo do comprometimento mapeado com hosts afetados identificados."},
+        {step_number:2,phase:"identification",action:"Correlacionar IOCs com feeds de inteligência (OTX, VirusTotal) para atribuir grupo APT.",responsible:"IR_TEAM",priority:"HIGH",estimated_time:"4h",tools:["OTX","VirusTotal","MISP"],success_criteria:"Grupo APT identificado com confiança ≥ 70%."},
+        {step_number:3,phase:"containment",action:"Bloquear domínios C2 e IPs maliciosos identificados nos feeds de threat intelligence.",responsible:"SOC",priority:"IMMEDIATE",estimated_time:"1h",tools:["Firewall","DNS Sinkhole","Proxy"],success_criteria:"Toda comunicação com infraestrutura C2 bloqueada."},
+        {step_number:4,phase:"eradication",action:"Remover implantes e backdoors de todos os hosts comprometidos. Forçar reset de credenciais.",responsible:"IR_TEAM",priority:"HIGH",estimated_time:"8h",tools:["EDR","AD Admin","CyberArk"],success_criteria:"Nenhum implante ativo detectado. Credenciais comprometidas inativadas."},
+        {step_number:5,phase:"recovery",action:"Restaurar hosts comprometidos a partir de imagens limpas. Reconfigurar serviços afetados.",responsible:"SYS_ADMIN",priority:"HIGH",estimated_time:"2-3 dias",tools:["Backup","Reimaging","Config Mgmt"],success_criteria:"Hosts restaurados com configuração segura verificada."},
+        {step_number:6,phase:"recovery",action:"Migrar para criptografia pós-quântica (Kyber768+X25519) nos sistemas de comunicação afetados pela técnica T1600.",responsible:"CISO",priority:"HIGH",estimated_time:"2 semanas",tools:["liboqs","OpenSSL 3.x","HSM"],success_criteria:"TLS 1.3 com suíte híbrida PQC ativo em 100% dos serviços críticos."},
+        {step_number:7,phase:"lessons_learned",action:"Publicar relatório de threat intelligence interno com TTPs do grupo APT identificado.",responsible:"IR_TEAM",priority:"MEDIUM",estimated_time:"3 dias",tools:["MITRE Navigator","Relatório","STIX/TAXII"],success_criteria:"Relatório distribuído para equipes de segurança e stakeholders."},
+        {step_number:8,phase:"lessons_learned",action:"Implementar hunting proativo baseado nos TTPs identificados para detectar reinfecção futura.",responsible:"SOC",priority:"MEDIUM",estimated_time:"1 semana",tools:["SIEM","Hunting Queries","YARA"],success_criteria:"Regras de detecção publicadas no SIEM cobrindo todos os TTPs identificados."}
+      ],
+      countermeasures:["Implementar Zero Trust Architecture.","Migrar criptografia para suítes PQC (Kyber768+X25519).","Habilitar monitoramento contínuo de exfiltração de dados.","Segmentar rede com microssegmentação baseada em identidade.","Implantar UEBA para detectar comportamentos anômalos.","Revisar e revogar acessos privilegiados desnecessários."],
+      pqc_relevance: "ALTO: Técnica T1600 (Weaken Encryption) detectada. Migração urgente para Kyber768+X25519 (KEM) e Dilithium3+Ed25519 (assinatura) para proteção contra ataques quânticos futuros."
+    }
+  },
+  alert_preview: {
+    rule_id:"sigint.cve.critical.v1", severity:"CRITICAL",
+    title:"CVE CRÍTICO: CVE-2024-12345 (CVSS 9.8) — NETWORK",
+    pqc_signed:"Dilithium3+Ed25519 (requer liboqs no stack completo)"
+  }
+};
+
 function showTab(id, ev) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   if (ev && ev.target) ev.target.classList.add('active');
+  if (id === 'sigint' && !sigintLoaded) initSigint();
 }
 
 function init() {
@@ -701,6 +843,129 @@ function simulateGarimpo() {
       via AlertRepository.create() e verificável por verify_signature(). Aqui, análise real — assinatura PQC requer liboqs.
     </div>
   </div>`;
+}
+
+// ── SIGINT (standalone) ──────────────────────────────────────────────────────
+const sev_color_s = { CRITICAL:'#ff3b3b', HIGH:'#ff8c00', MEDIUM:'#ffc600', LOW:'#00e887' };
+
+function initSigint() {
+  const data = SIGINT_MOCK;
+  sigintLoaded = true;
+  renderThreatCenter(data);
+  renderThreatLandscape(data.threat_landscape);
+  renderNarrativeMonitor(data.nlp_analysis);
+  renderDisinfoCampaigns(data.disinfo_campaigns || []);
+  _sigintIncidentData = data.incident_simulation;
+  renderIncidentPlaybook(_sigintIncidentData, 'ransomware');
+  renderSigintAlerts(data.alert_preview);
+  ['sigint-landscape','sigint-narratives','sigint-disinfo','sigint-incident','sigint-alerts']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.style.display='block'; });
+}
+
+function severityColor(sev) { return sev_color_s[sev] || '#5a7a9a'; }
+function sevBadge(sev) { return `<span class="sev-badge ${sev}">${sev}</span>`; }
+function typeBadge(t)  { return `<span class="type-badge">${t}</span>`; }
+function scoreBar(label, value, max, cssClass) {
+  const pct = Math.min(100, (value/max)*100).toFixed(1);
+  const val = typeof value === 'number' ? (max===10 ? value.toFixed(1) : (value*100).toFixed(0)+'%') : value;
+  return `<div class="score-bar-wrap ${cssClass}"><div class="score-bar-label"><span>${label}</span><span>${val}${max===10?'/10':''}</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:${pct}%"></div></div></div>`;
+}
+
+function renderThreatCenter(data) {
+  const ta = data.threat_analysis; if (!ta) return;
+  const prio = ta.priority || ta.recommended_priority || 'HIGH';
+  const hiTechs = new Set(ta.high_impact_techniques||[]);
+  const pills = (ta.mitre_techniques||[]).map(t=>`<span class="mitre-pill${hiTechs.has(t)?' hi':''}">${t}</span>`).join('');
+  const hints = (ta.mitigation_hints||[]).map((h,i)=>`<li style="margin-bottom:4px;color:var(--text)">${i+1}. ${h}</li>`).join('');
+  const exploit = ta.exploit_active ? `<span style="color:var(--critical);font-family:'JetBrains Mono',monospace;font-size:11px">&#x26A1; EXPLOIT ATIVO</span>` : `<span style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:11px">&#x2713; Sem IOC ativo</span>`;
+  const prioColor = prio==='IMMEDIATE'?'var(--critical)':'var(--high)';
+  document.getElementById('sigint-threat-center').innerHTML = `
+  <div class="card" style="border-color:${severityColor(ta.severity)}20">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div><div class="card-title">CVE Crítico · CVSS ${ta.base_cvss}</div><h2 style="font-family:'JetBrains Mono',monospace;font-size:18px;color:${severityColor(ta.severity)}">${ta.cve_id}</h2></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${sevBadge(ta.severity)}<span class="sev-badge" style="border-color:${prioColor};color:${prioColor}">&#x26A1; ${prio}</span><span class="type-badge">&#x1F4E1; ${ta.attack_vector}</span>${exploit}</div>
+    </div>
+    <div class="sigint-grid-2"><div>${scoreBar('CVSS Score',ta.base_cvss,10,'cvss-bar')}${scoreBar('Score Contextual',ta.contextual_score,1,'ctx-bar')}</div>
+    <div><div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-family:'JetBrains Mono',monospace;text-transform:uppercase">Técnicas MITRE ATT&amp;CK</div><div>${pills}</div></div></div>
+    ${hints?`<div style="margin-top:12px"><div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-transform:uppercase;margin-bottom:6px">Mitigações Recomendadas</div><ol style="padding-left:0;list-style:none">${hints}</ol></div>`:''}
+  </div>`;
+}
+
+function renderThreatLandscape(ls) {
+  if (!ls) return;
+  const co = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'#5a7a9a', font:{family:'JetBrains Mono',size:10} } } } };
+  const ds = { ticks:{color:'#5a7a9a',font:{size:10}}, grid:{color:'#0f1e30'} };
+  if (sigintSeverityChart) sigintSeverityChart.destroy();
+  const sc = document.getElementById('sigint-severity-chart');
+  if (sc) { const sd=ls.severity_distribution||{}; const sl=Object.keys(sd); sigintSeverityChart=new Chart(sc.getContext('2d'),{type:'doughnut',data:{labels:sl,datasets:[{data:Object.values(sd),backgroundColor:sl.map(s=>sev_color_s[s]||'#5a7a9a'),borderWidth:1,borderColor:'#0d1626'}]},options:{...co,cutout:'60%'}}); }
+  if (sigintMitreChart) sigintMitreChart.destroy();
+  const mc = document.getElementById('sigint-mitre-chart');
+  if (mc) { const top=(ls.top_mitre_techniques||[]).slice(0,6); sigintMitreChart=new Chart(mc.getContext('2d'),{type:'bar',data:{labels:top.map(t=>t[0]),datasets:[{label:'Ocorrências',data:top.map(t=>t[1]),backgroundColor:'#00c8ff44',borderColor:'#00c8ff',borderWidth:1}]},options:{...co,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:ds,y:{...ds,ticks:{...ds.ticks,font:{family:'JetBrains Mono',size:9}}}}}}); }
+  if (sigintVectorChart) sigintVectorChart.destroy();
+  const vc = document.getElementById('sigint-vector-chart');
+  if (vc) { const vd=ls.attack_vector_distribution||{}; const vc2={NETWORK:'#ff3b3b',LOCAL:'#ff8c00',ADJACENT:'#ffc600',PHYSICAL:'#00e887'}; sigintVectorChart=new Chart(vc.getContext('2d'),{type:'bar',data:{labels:Object.keys(vd),datasets:[{label:'Ameaças',data:Object.values(vd),backgroundColor:Object.keys(vd).map(v=>(vc2[v]||'#00c8ff')+'55'),borderColor:Object.keys(vd).map(v=>vc2[v]||'#00c8ff'),borderWidth:1}]},options:{...co,plugins:{legend:{display:false}},scales:{x:ds,y:ds}}}); }
+}
+
+function renderNarrativeMonitor(items) {
+  if (!items||!items.length) return;
+  const html=items.map(item=>{
+    const sentPct=Math.round((1-item.sentiment_score)/2*100);
+    const sl=item.sentiment_label||'neutral';
+    const kws=(item.keywords||[]).slice(0,6).map(k=>`<span class="kw-pill">${k}</span>`).join('');
+    const sc=sl==='threat'?'sev-threat':sl==='negative'?'sev-negative':'';
+    return `<div class="narr-item ${sc}"><div class="narr-title">${item.title||item.item_id}</div>
+      <div class="sigint-grid-2" style="margin:6px 0"><div>${scoreBar('Sentimento Negativo',sentPct,100,'sent-bar')}</div><div>${scoreBar('Score Desinformação',item.disinfo_score||0,1,'disinfo-bar')}</div></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="sev-badge ${sl==='threat'?'CRITICAL':sl==='negative'?'HIGH':'INFO'}">${sl.toUpperCase()}</span>${kws}</div></div>`;
+  }).join('');
+  document.getElementById('sigint-narr-list').innerHTML=html;
+}
+
+function renderDisinfoCampaigns(campaigns) {
+  if (!campaigns||!campaigns.length) { document.getElementById('sigint-campaigns-list').innerHTML='<p style="color:var(--muted);font-size:13px">Nenhuma campanha detectada.</p>'; return; }
+  document.getElementById('sigint-campaigns-list').innerHTML=campaigns.map(c=>`
+  <div class="campaign-card sev-${c.severity||'MEDIUM'}"><div class="campaign-name">${c.campaign_name}</div>
+    <div class="campaign-meta">${sevBadge(c.severity||'MEDIUM')}${typeBadge(c.campaign_type||'disinfo')}<span class="type-badge">&#x1F4F0; ${c.item_count||0} artigos</span><span class="type-badge">&#x1F4E1; ${c.source_count||0} fontes</span></div>
+    ${scoreBar('Disinfo Score',c.disinfo_score||0,1,'disinfo-bar')}
+    ${c.central_narrative?`<div class="campaign-narrative">"${c.central_narrative.substring(0,120)}${c.central_narrative.length>120?'…':''}"</div>`:''}
+  </div>`).join('');
+}
+
+function renderIncidentPlaybook(incidents, type) {
+  if (!incidents||!incidents[type]) return;
+  const inc=incidents[type];
+  document.querySelectorAll('.sigint-subbtn').forEach(b=>b.classList.remove('active'));
+  const ab=document.getElementById('inc-btn-'+type); if(ab) ab.classList.add('active');
+  const chainHtml=(inc.attack_chain||[]).map((step,i)=>{
+    const tech=step.split(' — ')[0]||step; const tactic=step.split(' — ')[1]||'';
+    const cls=tactic.includes('Initial')?'init':tactic.includes('Impact')||tactic.includes('Ransomware')?'impact':tactic.includes('Execution')?'exec':tactic.includes('Lateral')?'lat':'';
+    return `${i>0?'<span class="chain-arrow">→</span>':''}<div class="chain-node ${cls}" title="${step}">${tech}</div>`;
+  }).join('');
+  const po=['preparation','identification','containment','eradication','recovery','lessons_learned'];
+  const pn={preparation:'Preparação',identification:'Identificação',containment:'Contenção',eradication:'Erradicação',recovery:'Recuperação',lessons_learned:'Lições Aprendidas'};
+  const pe={preparation:'&#x1F527;',identification:'&#x1F50D;',containment:'&#x1F6E1;',eradication:'&#x1F5D1;',recovery:'&#x1F504;',lessons_learned:'&#x1F4CB;'};
+  const byPhase={}; po.forEach(p=>{byPhase[p]=[];}); (inc.playbook||[]).forEach(s=>{if(byPhase[s.phase])byPhase[s.phase].push(s);});
+  const accordionHtml=po.map((phase,pi)=>{
+    const ps=byPhase[phase]; if(!ps.length) return '';
+    const sh=ps.map(s=>`<div class="playbook-step"><div class="step-action">${s.action}</div><div class="step-meta"><span class="step-tag resp">${s.responsible}</span><span class="step-tag prio-${s.priority}">${s.priority}</span><span class="step-tag">&#x23F1; ${s.estimated_time}</span>${(s.tools||[]).slice(0,3).map(t=>`<span class="step-tag">${t}</span>`).join('')}</div>${s.success_criteria?`<div style="font-size:11px;color:var(--muted);margin-top:4px">&#x2713; ${s.success_criteria}</div>`:''}</div>`).join('');
+    return `<div class="playbook-phase"><div class="phase-header" onclick="togglePhase(this)"><span>${pe[phase]} ${pn[phase]} <span style="color:var(--muted);font-size:10px;font-weight:400">(${ps.length} ações)</span></span><span class="phase-chevron">&#x25B6;</span></div><div class="phase-body${pi===0?' open':''}">${sh}</div></div>`;
+  }).join('');
+  const cm=(inc.countermeasures||[]).map(c=>`<li style="margin-bottom:5px;color:var(--text);font-size:12px">&#x2713; ${c}</li>`).join('');
+  const pqcHtml=inc.pqc_relevance?`<div class="pqc-box">&#x1F510; <b>Relevância PQC:</b> ${inc.pqc_relevance}</div>`:'';
+  const statsHtml=`<div class="corr-stats" style="margin-bottom:16px"><div class="stat-box"><div class="stat-label">Tipo</div><div class="stat-val" style="font-size:14px;color:${severityColor(inc.severity||'HIGH')}">${(inc.incident_type||type).toUpperCase()}</div></div><div class="stat-box"><div class="stat-label">Severidade</div><div class="stat-val" style="font-size:14px;color:${severityColor(inc.severity||'HIGH')}">${inc.severity||'HIGH'}</div></div><div class="stat-box"><div class="stat-label">Etapas</div><div class="stat-val" style="font-size:14px;color:var(--accent)">${inc.playbook_steps||(inc.playbook||[]).length}</div></div><div class="stat-box"><div class="stat-label">Recuperação</div><div class="stat-val" style="font-size:14px;color:var(--high)">${inc.recovery_time||inc.recovery_time_estimate||'N/A'}</div></div></div>`;
+  document.getElementById('sigint-incident-body').innerHTML=`${statsHtml}<div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:6px">Cadeia de Ataque MITRE ATT&CK</div><div class="attack-chain">${chainHtml}</div></div><div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:8px">Playbook de Resposta (NIST SP 800-61)</div>${accordionHtml}</div>${cm?`<div><div class="card-title" style="margin-bottom:8px">Contramedidas</div><ul style="list-style:none;padding:0">${cm}</ul></div>`:''}${pqcHtml}`;
+}
+
+function togglePhase(headerEl) {
+  const body=headerEl.nextElementSibling; const chevron=headerEl.querySelector('.phase-chevron');
+  const isOpen=body.classList.toggle('open'); if(chevron) chevron.style.transform=isOpen?'rotate(90deg)':'';
+}
+
+function showSigintIncident(type) { if(_sigintIncidentData) renderIncidentPlaybook(_sigintIncidentData,type); }
+
+function renderSigintAlerts(ap) {
+  if (!ap) return;
+  const sc=severityColor(ap.severity||'CRITICAL');
+  document.getElementById('sigint-alert-box').innerHTML=`<div class="alert-box" style="border-color:${sc}"><div class="alert-header" style="color:${sc}">&#x1F6A8; ALERTA SIGINT GERADO</div><div class="alert-rule">${ap.rule_id}</div><p style="color:${sc};font-weight:700;margin-bottom:8px">${ap.title}</p><div class="pqc-note">&#x1F510; Assinatura PQC: <b>${ap.pqc_signed||'Dilithium3+Ed25519'}</b> · No stack completo (Railway) este alerta seria assinado pelo AlertRepository.create() e verificável via verify_signature().</div></div>`;
 }
 
 // ── Boot ────────────────────────────────────────────────────────────────────

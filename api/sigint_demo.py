@@ -79,10 +79,11 @@ def _build_demo() -> dict:
         },
 
         "threat_landscape": {
-            "total_threats":            landscape["total_threats"],
-            "top_mitre_techniques":     landscape["top_mitre_techniques"][:5],
-            "severity_distribution":    landscape["severity_distribution"],
-            "critical_product_exposure": landscape["critical_product_exposure"][:5],
+            "total_threats":              landscape["total_threats"],
+            "top_mitre_techniques":       landscape["top_mitre_techniques"][:5],
+            "severity_distribution":      landscape["severity_distribution"],
+            "attack_vector_distribution": landscape.get("attack_vector_distribution", {}),
+            "critical_product_exposure":  landscape["critical_product_exposure"][:5],
         },
 
         "nlp_analysis": [
@@ -112,31 +113,64 @@ def _build_demo() -> dict:
 
         "disinfo_campaigns": [
             {
-                "campaign_name":   d["campaign_name"],
-                "campaign_type":   d["campaign_type"],
-                "disinfo_score":   d["disinfo_score"],
-                "severity":        d["severity"],
-                "item_count":      d["item_count"],
+                "campaign_name":    d["campaign_name"],
+                "campaign_type":    d["campaign_type"],
+                "disinfo_score":    d["disinfo_score"],
+                "severity":         d["severity"],
+                "item_count":       d["item_count"],
+                "source_count":     d.get("source_count", 1),
+                "central_narrative": d.get("central_narrative", ""),
             }
             for d in disinfo_campaigns
         ],
 
         "incident_simulation": {
             "ransomware": {
-                "incident_type":       incident.incident_type,
-                "severity":            incident.severity,
-                "affected_systems":    incident.affected_systems[:4],
-                "attack_chain":        incident.attack_chain[:4],
-                "recovery_time":       incident.recovery_time_estimate,
-                "playbook_steps":      len(incident.playbook),
-                "countermeasures":     incident.countermeasures[:4],
-                "pqc_relevance":       incident.pqc_relevance,
+                "incident_type":    incident.incident_type,
+                "severity":         incident.severity,
+                "affected_systems": incident.affected_systems[:4],
+                "attack_chain":     incident.attack_chain,
+                "recovery_time":    incident.recovery_time_estimate,
+                "recovery_time_estimate": incident.recovery_time_estimate,
+                "playbook_steps":   len(incident.playbook),
+                "playbook": [
+                    {
+                        "step_number":     s.step_number,
+                        "phase":           s.phase,
+                        "action":          s.action,
+                        "responsible":     s.responsible,
+                        "priority":        s.priority,
+                        "estimated_time":  s.estimated_time,
+                        "tools":           s.tools,
+                        "success_criteria": s.success_criteria,
+                    }
+                    for s in incident.playbook
+                ],
+                "countermeasures":  incident.countermeasures[:6],
+                "pqc_relevance":    incident.pqc_relevance,
             },
             "apt": {
                 "incident_type":    apt_incident.incident_type,
                 "severity":         apt_incident.severity,
-                "attack_chain":     apt_incident.attack_chain[:4],
+                "affected_systems": apt_incident.affected_systems[:4],
+                "attack_chain":     apt_incident.attack_chain,
+                "recovery_time":    apt_incident.recovery_time_estimate,
+                "recovery_time_estimate": apt_incident.recovery_time_estimate,
                 "playbook_steps":   len(apt_incident.playbook),
+                "playbook": [
+                    {
+                        "step_number":     s.step_number,
+                        "phase":           s.phase,
+                        "action":          s.action,
+                        "responsible":     s.responsible,
+                        "priority":        s.priority,
+                        "estimated_time":  s.estimated_time,
+                        "tools":           s.tools,
+                        "success_criteria": s.success_criteria,
+                    }
+                    for s in apt_incident.playbook
+                ],
+                "countermeasures":  apt_incident.countermeasures[:6],
                 "pqc_relevance":    apt_incident.pqc_relevance,
             },
         },
