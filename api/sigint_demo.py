@@ -1,4 +1,12 @@
 """GET /api/sigint_demo — Demo SIGINT: análise de ameaças, narrativas e incidentes."""
+import os
+import sys
+
+# Vercel bundles the project root; src/ must be on sys.path for local packages.
+_src = os.path.join(os.path.dirname(__file__), "..", "src")
+if _src not in sys.path:
+    sys.path.insert(0, _src)
+
 from http.server import BaseHTTPRequestHandler
 import json
 from datetime import datetime, timezone
