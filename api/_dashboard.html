@@ -1404,31 +1404,9 @@ function renderAtlas() {
   `).join('');
 
   body.innerHTML = `
-    <div class="card">
-      <div class="card-title">Ontologia</div>
-      <p><b>${ont.object_types_total}</b> tipos de objetos definidos · <b>${ont.core_materialized}</b> materializados em SQL no Sprint 4</p>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)">${ont.core_objects.join(' · ')}</div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Pipeline de Ingestão (DOU + LexML)</div>
-      <div class="sigint-grid-3">
-        <div><h2>${ing.dou_observations}</h2><p>observações DOU</p></div>
-        <div><h2>${ing.lexml_observations}</h2><p>observações LexML</p></div>
-        <div><h2>${ing.normas_built}</h2><p>Normas construídas</p></div>
-      </div>
-    </div>
-
-    <div class="card" style="border:1px solid var(--accent)">
-      <div class="card-title" style="color:var(--accent)">⭐ Entity Resolution Gotham-style</div>
-      <p>${er.explanation}</p>
-      <p>Chave natural: <code>${er.natural_key}</code> · <b>${er.matched_pairs}</b> de <b>${er.total_resolved}</b> normas convergiram entre fontes diferentes</p>
-      ${merged_rows}
-    </div>
-
     ${juri.colegiado ? `
     <div class="card" style="border:1px solid var(--accent)">
-      <div class="card-title" style="color:var(--accent)">⚖ Jurimetria — Colegiado ${col.orgao || 'ANM'}</div>
+      <div class="card-title" style="color:var(--accent)">⚖ Jurimetria — Colegiado ${col.orgao || 'ANM'} <span style="font-size:10px;color:var(--muted)">· Módulo 2 / PR6</span></div>
       <p style="font-size:12px;color:var(--muted)">${juri.explanation || ''}</p>
       <div class="sigint-grid-3" style="margin-bottom:12px">
         <div><h2>${col.total_deliberacoes}</h2><p>deliberações analisadas</p></div>
@@ -1451,6 +1429,22 @@ function renderAtlas() {
     </div>
     ` : ''}
 
+    <div class="card" style="border:1px solid var(--accent)">
+      <div class="card-title" style="color:var(--accent)">⭐ Entity Resolution Gotham-style</div>
+      <p>${er.explanation}</p>
+      <p>Chave natural: <code>${er.natural_key}</code> · <b>${er.matched_pairs}</b> de <b>${er.total_resolved}</b> normas convergiram entre fontes diferentes</p>
+      ${merged_rows}
+    </div>
+
+    <div class="card">
+      <div class="card-title">Ontologia & Ingestão (PR1–PR5)</div>
+      <p><b>${ont.object_types_total}</b> tipos de objetos definidos · <b>${ont.core_materialized}</b> materializados em SQL · pipeline DOU + LexML produziu <b>${ing.normas_built}</b> Normas a partir de <b>${ing.total_observations}</b> observações</p>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:6px">${ont.core_objects.join(' · ')}</div>
+    </div>
+
+    <details class="card" style="cursor:pointer">
+      <summary style="font-weight:600;color:var(--muted)">▸ Detalhes técnicos do pipeline (estatísticas, amostras, showcases)</summary>
+      <div style="margin-top:12px">
     <div class="card">
       <div class="card-title">Estatísticas Normativas</div>
       <div class="sigint-grid-2">
@@ -1488,6 +1482,8 @@ function renderAtlas() {
       <div class="card-title">Princípios Fundadores</div>
       <ul>${principios}</ul>
     </div>
+      </div>
+    </details>
   `;
 
   // Charts
