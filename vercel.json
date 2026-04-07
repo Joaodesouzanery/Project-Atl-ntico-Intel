@@ -14,6 +14,7 @@
     { "src": "/api/risk",    "dest": "/api/risk.py" },
     { "src": "/api/demo",        "dest": "/api/demo.py" },
     { "src": "/api/sigint_demo", "dest": "/api/sigint_demo.py" },
+    { "src": "/api/atlas_demo",  "dest": "/api/atlas_demo.py" },
     { "src": "/(.*)",            "dest": "/api/index.py" }
   ]
 }

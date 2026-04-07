@@ -351,6 +351,7 @@
     <button class="tab-btn" onclick="showTab('risk')">⚖ Score de Risco</button>
     <button class="tab-btn danger" onclick="showTab('garimpo')">🚨 Sinal Garimpo</button>
     <button class="tab-btn" onclick="showTab('sigint')">🛡 SIGINT</button>
+    <button class="tab-btn" onclick="showTab('atlas')">⚖ ATLAS Regulatório</button>
   </div>
 
   <!-- ── TAB: ANOMALIAS ── -->
@@ -492,6 +493,19 @@
     </div>
   </div>
 
+  <!-- ── TAB: ATLAS ── -->
+  <div id="tab-atlas" class="tab-panel">
+    <div class="card">
+      <div class="card-title">ATLAS · Inteligência Regulatória · Inspirado em Palantir Gotham</div>
+      <h2>Atlântico Atlas — Vertical Regulatória</h2>
+      <p>Ontologia operacional de 15 objetos · ingestão DOU + LexML · entity resolution natural · alvo inicial: ANM. Toda a stack reusa código real dos PRs 1-4.</p>
+      <div class="btn-row">
+        <button class="btn" onclick="initAtlas()">▶ Carregar Atlas Demo</button>
+      </div>
+    </div>
+    <div id="atlas-body"></div>
+  </div>
+
   <!-- ── TAB: GARIMPO ── -->
   <div id="tab-garimpo" class="tab-panel">
     <div class="card">
@@ -520,6 +534,11 @@ let SIGINT = null;
 let sigintLoaded = false;
 let sigintSeverityChart = null, sigintMitreChart = null, sigintVectorChart = null;
 let _sigintIncidentData = null;
+
+// ATLAS state
+let ATLAS = null;
+let atlasLoaded = false;
+let atlasTipoChart = null, atlasOrgaoChart = null, atlasTimelineChart = null;
 
 // ── Utilitários ────────────────────────────────────────────────────────────
 const sev_color = { CRITICAL: '#ff3b3b', HIGH: '#ff8c00', MEDIUM: '#ffc600', LOW: '#00e887' };
@@ -564,6 +583,7 @@ function showTab(id) {
   document.getElementById('tab-' + id).classList.add('active');
   event.target.classList.add('active');
   if (id === 'sigint' && !sigintLoaded) initSigint();
+  if (id === 'atlas'  && !atlasLoaded)  initAtlas();
 }
 
 // ── TAB: ANOMALIAS ─────────────────────────────────────────────────────────
@@ -1309,6 +1329,196 @@ function renderSigintAlerts(alertPreview) {
       seria assinado pelo AlertRepository.create() e verificável via AlertRepository.verify_signature().
     </div>
   </div>`;
+}
+
+// ── TAB: ATLAS Regulatório ─────────────────────────────────────────────────
+async function initAtlas() {
+  if (atlasLoaded) return;
+  const body = document.getElementById('atlas-body');
+  body.innerHTML = '<div class="card"><p>Carregando Atlas demo…</p></div>';
+  try {
+    ATLAS = await apiFetch('/api/atlas_demo');
+    atlasLoaded = true;
+    renderAtlas();
+  } catch (e) {
+    body.innerHTML = '<div class="card"><p style="color:var(--critical)">Erro ao carregar Atlas: ' + e.message + '</p></div>';
+  }
+}
+
+function renderAtlas() {
+  const a = ATLAS;
+  if (!a) return;
+  const er = a.entity_resolution;
+  const stats = a.norma_stats;
+  const ing = a.ingestion_summary;
+  const ont = a.ontology;
+
+  const merged_rows = (er.merged_examples || []).map(m => `
+    <div class="card" style="margin-bottom:8px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent)">${m.tipo.toUpperCase()} ${m.orgao} nº ${m.numero}/${m.ano}</div>
+      <div style="margin-top:6px">${m.ementa || ''}</div>
+      <div style="margin-top:6px;font-size:11px;color:var(--muted)">URN: <code>${m.urn_lex || '—'}</code></div>
+      <div style="margin-top:4px;font-size:11px">Fontes: ${(m.sources || []).map(s => `<span class="badge ok">${s}</span>`).join(' ')}</div>
+    </div>
+  `).join('');
+
+  const sample_rows = (a.sample_normas || []).map(n => `
+    <tr>
+      <td>${n.tipo}</td>
+      <td>${n.orgao}</td>
+      <td>${n.numero}/${n.ano}</td>
+      <td><code style="font-size:10px">${n.urn_lex || '—'}</code></td>
+      <td>${n.merged ? '<span class="badge ok">DOU+LexML</span>' : '<span class="badge">single</span>'}</td>
+    </tr>
+  `).join('');
+
+  const delib = a.sample_deliberacao;
+  const votos_html = (delib.votos || []).map(v =>
+    `<li><b>${v.diretor_id}</b> — <span style="color:${v.sentido==='favoravel'?'var(--accent)':v.sentido==='contrario'?'var(--critical)':'var(--muted)'}">${v.sentido}</span>${v.fundamento ? ' · ' + v.fundamento : ''}</li>`
+  ).join('');
+
+  const reg = a.sample_regulado;
+
+  const principios = (a.principios_atlas || []).map(p => `<li>${p}</li>`).join('');
+
+  body.innerHTML = `
+    <div class="card">
+      <div class="card-title">Ontologia</div>
+      <p><b>${ont.object_types_total}</b> tipos de objetos definidos · <b>${ont.core_materialized}</b> materializados em SQL no Sprint 4</p>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)">${ont.core_objects.join(' · ')}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Pipeline de Ingestão (DOU + LexML)</div>
+      <div class="sigint-grid-3">
+        <div><h2>${ing.dou_observations}</h2><p>observações DOU</p></div>
+        <div><h2>${ing.lexml_observations}</h2><p>observações LexML</p></div>
+        <div><h2>${ing.normas_built}</h2><p>Normas construídas</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="border:1px solid var(--accent)">
+      <div class="card-title" style="color:var(--accent)">⭐ Entity Resolution Gotham-style</div>
+      <p>${er.explanation}</p>
+      <p>Chave natural: <code>${er.natural_key}</code> · <b>${er.matched_pairs}</b> de <b>${er.total_resolved}</b> normas convergiram entre fontes diferentes</p>
+      ${merged_rows}
+    </div>
+
+    <div class="card">
+      <div class="card-title">Estatísticas Normativas</div>
+      <div class="sigint-grid-2">
+        <div><div class="card-title" style="margin-bottom:8px">Por Tipo</div><div class="chart-wrap-sm"><canvas id="atlas-tipo-chart"></canvas></div></div>
+        <div><div class="card-title" style="margin-bottom:8px">Top Órgãos</div><div class="chart-wrap-sm"><canvas id="atlas-orgao-chart"></canvas></div></div>
+      </div>
+      <div style="margin-top:16px"><div class="card-title" style="margin-bottom:8px">Timeline (últimos 7 dias)</div><div class="chart-wrap-sm"><canvas id="atlas-timeline-chart"></canvas></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Amostra de Normas Resolvidas</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <thead><tr style="text-align:left;color:var(--muted)"><th>Tipo</th><th>Órgão</th><th>Número</th><th>URN LexML</th><th>Fontes</th></tr></thead>
+        <tbody>${sample_rows}</tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Showcase: Deliberação Colegiada (com Votos)</div>
+      <p><b>${delib.identifier}</b> — <span class="badge ok">${delib.dispositivo}</span></p>
+      <p>${delib.ementa}</p>
+      <p style="font-size:11px;color:var(--muted)">Relator: ${delib.relator_id}</p>
+      <ul>${votos_html}</ul>
+      <p style="font-size:11px;color:var(--muted)">Norma citada: <code>${(delib.norma_citada_urns || []).join(', ')}</code></p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Showcase: Regulado (LGPD-by-design)</div>
+      <p><b>${reg.razao_social}</b> · CNPJ <code>${reg.cnpj}</code></p>
+      <p>Setor: ${reg.setor} · Tier: <span class="badge ${reg.tier_risco==='ALTO'||reg.tier_risco==='CRITICO'?'warn':'ok'}">${reg.tier_risco}</span> · Grupo: ${reg.grupo_economico || '—'}</p>
+      <p style="font-size:11px;color:var(--muted)"><i>${reg.lgpd_note}</i></p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Princípios Fundadores</div>
+      <ul>${principios}</ul>
+    </div>
+  `;
+
+  // Charts
+  drawAtlasCharts();
+}
+
+function drawAtlasCharts() {
+  const stats = ATLAS.norma_stats;
+  if (atlasTipoChart) atlasTipoChart.destroy();
+  if (atlasOrgaoChart) atlasOrgaoChart.destroy();
+  if (atlasTimelineChart) atlasTimelineChart.destroy();
+
+  const tipoCtx = document.getElementById('atlas-tipo-chart');
+  if (tipoCtx) {
+    const tipoLabels = Object.keys(stats.count_by_tipo);
+    const tipoVals   = Object.values(stats.count_by_tipo);
+    atlasTipoChart = new Chart(tipoCtx.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: tipoLabels,
+        datasets: [{
+          data: tipoVals,
+          backgroundColor: ['#00c8ff','#ff8c00','#ffc600','#9b59b6','#27ae60','#ff3b3b','#4a90d9','#888'],
+        }]
+      },
+      options: { plugins: { legend: { position: 'right', labels: { color: '#cfd6e0', font: { size: 10 } } } } }
+    });
+  }
+
+  const orgaoCtx = document.getElementById('atlas-orgao-chart');
+  if (orgaoCtx) {
+    const o = stats.top_orgaos || [];
+    atlasOrgaoChart = new Chart(orgaoCtx.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: o.map(x => x.orgao.replace('Agência Nacional de ', 'A.N. ')),
+        datasets: [{
+          label: 'Normas',
+          data: o.map(x => x.count),
+          backgroundColor: '#00c8ff',
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#cfd6e0' }, beginAtZero: true },
+          y: { ticks: { color: '#cfd6e0', font: { size: 10 } } }
+        }
+      }
+    });
+  }
+
+  const tCtx = document.getElementById('atlas-timeline-chart');
+  if (tCtx) {
+    const t = stats.timeline_last_7d || [];
+    atlasTimelineChart = new Chart(tCtx.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: t.map(x => x.date),
+        datasets: [{
+          label: 'Normas/dia',
+          data: t.map(x => x.count),
+          borderColor: '#00c8ff',
+          backgroundColor: 'rgba(0,200,255,0.1)',
+          fill: true,
+          tension: 0.3,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#cfd6e0', font: { size: 10 } } },
+          y: { ticks: { color: '#cfd6e0' }, beginAtZero: true }
+        }
+      }
+    });
+  }
 }
 
 // ── Boot ───────────────────────────────────────────────────────────────────
