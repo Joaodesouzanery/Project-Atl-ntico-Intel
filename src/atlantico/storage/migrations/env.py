@@ -32,6 +32,15 @@ from atlantico.storage.models.audit_log import AuditLogEntry  # noqa: E402, F401
 from atlantico.storage.models.key_store import KeyStoreEntry  # noqa: E402, F401
 from atlantico.storage.models.source_record import SourceRecord  # noqa: E402, F401
 
+# Atlas (vertical regulatória paralela) — import explícito para autogenerate
+from atlantico.atlas.storage.models import (  # noqa: E402, F401
+    ContratoConcessaoModel,
+    DeliberacaoModel,
+    NormaModel,
+    ProcessoAdministrativoModel,
+    ReguladoModel,
+)
+
 # Alembic Config — lê alembic.ini
 config = context.config
 
