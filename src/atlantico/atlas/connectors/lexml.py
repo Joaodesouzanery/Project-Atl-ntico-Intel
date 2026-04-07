@@ -24,7 +24,10 @@ import re
 from datetime import datetime, timezone
 from xml.etree import ElementTree as ET
 
-import httpx
+try:
+    import httpx
+except ImportError:  # pragma: no cover — Lambda demo path
+    httpx = None  # type: ignore
 
 from atlantico.atlas.connectors.base import (
     AtlasConnector,

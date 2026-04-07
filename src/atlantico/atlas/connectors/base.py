@@ -15,14 +15,24 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import ClassVar
 
-import httpx
-from tenacity import (
-    before_sleep_log,
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+try:
+    import httpx
+    from tenacity import (
+        before_sleep_log,
+        retry,
+        retry_if_exception_type,
+        stop_after_attempt,
+        wait_exponential,
+    )
+except ImportError:  # pragma: no cover — Lambda demo path sem deps de rede
+    httpx = None  # type: ignore
+    def retry(*_a, **_k):  # type: ignore
+        def _wrap(fn): return fn
+        return _wrap
+    def before_sleep_log(*_a, **_k): return None  # type: ignore
+    def retry_if_exception_type(*_a, **_k): return None  # type: ignore
+    def stop_after_attempt(*_a, **_k): return None  # type: ignore
+    def wait_exponential(*_a, **_k): return None  # type: ignore
 
 from atlantico.atlas.observations import AtlasObservation
 
