@@ -25,6 +25,11 @@ if _src not in sys.path:
 
 
 def _build_demo() -> dict:
+    from atlantico.atlas.analytics import (
+        compute_alignment_matrix,
+        compute_colegiado_profile,
+        predict_deferment,
+    )
     from atlantico.atlas.connectors.dou import DOUConnector
     from atlantico.atlas.connectors.lexml import LexMLConnector
     from atlantico.atlas.ingestion.normalizer import observation_to_norma
@@ -163,8 +168,70 @@ def _build_demo() -> dict:
             Voto("diretor-anm-2", "favoravel"),
             Voto("diretor-anm-3", "contrario", "Discorda da definição do raio de impacto"),
         ],
+        tags=["outorga"],
         norma_citada_urns=["urn:lex:br:agencia.nacional.mineracao:resolucao:2026;7"],
     )
+
+    # ── 6.5 Histórico sintético de deliberações ANM (Módulo 2 — Jurimetria) ─
+    # 12 deliberações ao longo de ~18 meses, 3 diretores, mix de microtemas.
+    # Construído para que `predict_deferment` produza um sinal explicável.
+    diretores = ["diretor-anm-1", "diretor-anm-2", "diretor-anm-3"]
+    delib_specs = [
+        # (offset_dias, relator_idx, dispositivo, tags, votos)
+        (540, 0, "deferido",            ["outorga"],          ["favoravel", "favoravel", "favoravel"]),
+        (510, 1, "deferido",            ["revisao_tarifaria"],["favoravel", "favoravel", "contrario"]),
+        (470, 2, "indeferido",          ["sancionamento"],    ["contrario", "contrario", "favoravel"]),
+        (430, 0, "deferido",            ["outorga"],          ["favoravel", "favoravel", "favoravel"]),
+        (390, 1, "parcialmente_deferido",["revisao_tarifaria"],["favoravel", "favoravel", "contrario"]),
+        (340, 2, "indeferido",          ["sancionamento"],    ["contrario", "contrario", "contrario"]),
+        (290, 0, "deferido",            ["outorga"],          ["favoravel", "favoravel", "abstencao"]),
+        (240, 1, "deferido",            ["revisao_tarifaria"],["favoravel", "favoravel", "favoravel"]),
+        (190, 2, "indeferido",          ["sancionamento"],    ["contrario", "favoravel", "contrario"]),
+        (140, 0, "deferido",            ["outorga"],          ["favoravel", "favoravel", "contrario"]),
+        ( 80, 1, "parcialmente_deferido",["revisao_tarifaria"],["favoravel", "favoravel", "favoravel"]),
+        ( 30, 2, "indeferido",          ["sancionamento"],    ["contrario", "contrario", "favoravel"]),
+    ]
+    historico_delibs: list[Deliberacao] = []
+    for idx, (offset, rel_idx, disp, tags, votos_sentidos) in enumerate(delib_specs):
+        historico_delibs.append(Deliberacao(
+            orgao="ANM",
+            colegiado="diretoria_colegiada",
+            numero=100 + idx,
+            ano=2025,
+            data_sessao=now - timedelta(days=offset),
+            relator_id=diretores[rel_idx],
+            dispositivo=disp,
+            ementa=f"Deliberação histórica #{idx} sobre {tags[0]}",
+            votos=[Voto(diretores[i], s) for i, s in enumerate(votos_sentidos)],
+            tags=tags,
+        ))
+
+    colegiado_profile = compute_colegiado_profile(historico_delibs, orgao="ANM")
+    align_matrix = compute_alignment_matrix(historico_delibs)
+    pleito_hipotetico = predict_deferment(
+        historico_delibs,
+        orgao="ANM",
+        relator_id="diretor-anm-2",
+        tags=["revisao_tarifaria"],
+    )
+
+    # Distribuição por diretor — para tabela do dashboard
+    diretor_stats = []
+    for did in diretores:
+        votos_dir = [v for d in historico_delibs for v in d.votos if v.diretor_id == did]
+        n = len(votos_dir)
+        favs = sum(1 for v in votos_dir if v.sentido == "favoravel")
+        tags_dir = Counter(
+            t for d in historico_delibs for v in d.votos
+            if v.diretor_id == did for t in d.tags
+        )
+        microtema_top = tags_dir.most_common(1)[0][0] if tags_dir else "—"
+        diretor_stats.append({
+            "diretor_id":     did,
+            "n_votos":        n,
+            "pct_favoravel":  round(100 * favs / n, 1) if n else 0.0,
+            "microtema_top":  microtema_top,
+        })
 
     sample_regulado = Regulado(
         razao_social="Mineração Atlântico Sul S.A.",
@@ -230,6 +297,42 @@ def _build_demo() -> dict:
             }
             for r in resolved[:8]
         ],
+        "jurimetria": {
+            "explanation": (
+                "Módulo 2 do Atlântico Atlas — análise estatística do "
+                "comportamento decisório do colegiado. Stdlib-only (sem "
+                "scipy/sklearn) para rodar dentro do limite do Lambda Vercel."
+            ),
+            "colegiado": {
+                "orgao":                colegiado_profile.orgao,
+                "colegiado":            colegiado_profile.colegiado,
+                "total_deliberacoes":   colegiado_profile.total_deliberacoes,
+                "taxa_unanimidade":     colegiado_profile.taxa_unanimidade,
+                "dispositivo_distribution": colegiado_profile.dispositivo_distribution,
+                "mean_votos_por_decisao":   colegiado_profile.mean_votos_por_decisao,
+                "top_relatores":        colegiado_profile.top_relatores,
+                "microtemas_top":       colegiado_profile.microtemas_top,
+                "diretor_stats":        diretor_stats,
+            },
+            "alignment": {
+                "directors":  align_matrix.directors,
+                "top_pairs": [
+                    {"a": a, "b": b, "score": round(s, 3)}
+                    for a, b, s in align_matrix.top_pairs(5)
+                ],
+            },
+            "prediction_demo": {
+                "pleito": "Pleito hipotético: revisão tarifária com diretor-anm-2 como relator",
+                "probability_deferimento": pleito_hipotetico.probability_deferimento,
+                "confidence_interval_95":  list(pleito_hipotetico.confidence_interval_95),
+                "sample_size":             pleito_hipotetico.sample_size,
+                "top_factors": [
+                    {"factor": f, "log_odds": adj}
+                    for f, adj in pleito_hipotetico.top_factors
+                ],
+                "explanation": pleito_hipotetico.explanation,
+            },
+        },
         "sample_deliberacao": {
             "orgao":       sample_delib.orgao,
             "identifier":  sample_delib.identificador_humano,

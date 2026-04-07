@@ -1381,6 +1381,26 @@ function renderAtlas() {
 
   const principios = (a.principios_atlas || []).map(p => `<li>${p}</li>`).join('');
 
+  // Jurimetria (Módulo 2) — defensive if backend is older
+  const juri = a.jurimetria || {};
+  const col  = juri.colegiado || {};
+  const align = juri.alignment || {};
+  const pred = juri.prediction_demo || {};
+  const diretor_rows = (col.diretor_stats || []).map(d => `
+    <tr>
+      <td><code>${d.diretor_id}</code></td>
+      <td>${d.n_votos}</td>
+      <td>${d.pct_favoravel}%</td>
+      <td><span class="badge">${d.microtema_top}</span></td>
+    </tr>
+  `).join('');
+  const align_rows = (align.top_pairs || []).map(p => `
+    <li><code>${p.a}</code> ↔ <code>${p.b}</code> · alinhamento <b>${(p.score*100).toFixed(0)}%</b></li>
+  `).join('');
+  const factor_rows = (pred.top_factors || []).slice(0, 3).map(f => `
+    <li><code>${f.factor}</code> · log-odds <b>${f.log_odds >= 0 ? '+' : ''}${f.log_odds}</b></li>
+  `).join('');
+
   body.innerHTML = `
     <div class="card">
       <div class="card-title">Ontologia</div>
@@ -1403,6 +1423,31 @@ function renderAtlas() {
       <p>Chave natural: <code>${er.natural_key}</code> · <b>${er.matched_pairs}</b> de <b>${er.total_resolved}</b> normas convergiram entre fontes diferentes</p>
       ${merged_rows}
     </div>
+
+    ${juri.colegiado ? `
+    <div class="card" style="border:1px solid var(--accent)">
+      <div class="card-title" style="color:var(--accent)">⚖ Jurimetria — Colegiado ${col.orgao || 'ANM'}</div>
+      <p style="font-size:12px;color:var(--muted)">${juri.explanation || ''}</p>
+      <div class="sigint-grid-3" style="margin-bottom:12px">
+        <div><h2>${col.total_deliberacoes}</h2><p>deliberações analisadas</p></div>
+        <div><h2>${(col.taxa_unanimidade*100).toFixed(0)}%</h2><p>unanimidade</p></div>
+        <div><h2>${col.mean_votos_por_decisao}</h2><p>votos / decisão</p></div>
+      </div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;margin-bottom:12px">
+        <thead><tr style="text-align:left;color:var(--muted)"><th>Diretor</th><th>Votos</th><th>% favorável</th><th>Microtema dominante</th></tr></thead>
+        <tbody>${diretor_rows}</tbody>
+      </table>
+      ${align_rows ? `<div class="card-title" style="margin-bottom:6px;font-size:12px">Pares mais alinhados</div><ul style="font-size:12px">${align_rows}</ul>` : ''}
+      ${pred.probability_deferimento !== undefined ? `
+      <div style="margin-top:12px;padding:10px;background:rgba(0,0,0,0.25);border-left:2px solid var(--accent)">
+        <div class="card-title" style="font-size:12px;margin-bottom:4px">Predição calibrada</div>
+        <p style="font-size:12px;margin:4px 0">${pred.pleito || ''}</p>
+        <p style="margin:4px 0">Prob. de deferimento: <b style="color:var(--accent);font-size:18px">${(pred.probability_deferimento*100).toFixed(1)}%</b>
+           <span style="font-size:11px;color:var(--muted)">IC95% [${(pred.confidence_interval_95[0]*100).toFixed(0)}%, ${(pred.confidence_interval_95[1]*100).toFixed(0)}%] · n=${pred.sample_size}</span></p>
+        ${factor_rows ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">Fatores explicativos (top 3):</div><ul style="font-size:12px;margin:4px 0">${factor_rows}</ul>` : ''}
+      </div>` : ''}
+    </div>
+    ` : ''}
 
     <div class="card">
       <div class="card-title">Estatísticas Normativas</div>
