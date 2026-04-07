@@ -1348,6 +1348,8 @@ async function initAtlas() {
 function renderAtlas() {
   const a = ATLAS;
   if (!a) return;
+  const body = document.getElementById('atlas-body');
+  if (!body) return;
   const er = a.entity_resolution;
   const stats = a.norma_stats;
   const ing = a.ingestion_summary;
